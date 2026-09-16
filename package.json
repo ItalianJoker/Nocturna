@@ -1,0 +1,37 @@
+{
+  "name": "nocturna",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nocturna — Chi dorme non sopravvive. Social deduction webapp.",
+  "workspaces": [
+    "packages/*",
+    "server",
+    "client"
+  ],
+  "scripts": {
+    "build": "npm run build -w @nocturna/shared && npm run build -w @nocturna/server && npm run build -w @nocturna/client",
+    "build:shared": "npm run build -w @nocturna/shared",
+    "dev": "npm run build:shared && concurrently -n server,client -c crimson,amber \"npm run dev -w @nocturna/server\" \"npm run dev -w @nocturna/client\"",
+    "dev:server": "npm run build:shared && npm run dev -w @nocturna/server",
+    "dev:client": "npm run dev -w @nocturna/client",
+    "start": "npm run start -w @nocturna/server",
+    "typecheck": "npm run typecheck -w @nocturna/shared && npm run typecheck -w @nocturna/server && npm run typecheck -w @nocturna/client",
+    "test": "npm run test -w @nocturna/shared",
+    "prepare:host": "node scripts/prepare-host-embed.mjs",
+    "dist:docker": "docker compose build",
+    "dist:docker:up": "docker compose up --build",
+    "dist:host:prepare": "npm run build && npm run prepare:host && npm --prefix host install",
+    "dist:host": "npm run dist:host:prepare && npm --prefix host run dist",
+    "dist:host:linux": "npm run dist:host:prepare && npm --prefix host run dist:linux",
+    "dist:host:win": "npm run dist:host:prepare && npm --prefix host run dist:win",
+    "dist:host:mac": "npm run dist:host:prepare && npm --prefix host run dist:mac",
+    "dist:host:all": "npm run dist:host:prepare && npm --prefix host run dist:all"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.2",
+    "typescript": "^5.8.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
