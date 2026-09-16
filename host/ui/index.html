@@ -1,0 +1,214 @@
+<!doctype html>
+<html lang="it">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>Nocturna Host</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #0a0a0c;
+        --panel: #121218;
+        --crimson: #9f1239;
+        --amber: #d97706;
+        --paper: #e7e5e4;
+        --mist: #a8a29e;
+        --safe-b: env(safe-area-inset-bottom, 0px);
+      }
+      * {
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+        background: radial-gradient(
+            ellipse 100% 60% at 50% 0%,
+            #3f1525 0%,
+            transparent 55%
+          ),
+          var(--bg);
+        color: var(--paper);
+        font-family: 'Segoe UI', system-ui, sans-serif;
+        overflow-x: hidden;
+      }
+      main {
+        padding: 1.25rem 1.1rem calc(1.25rem + var(--safe-b));
+        max-width: 28rem;
+        margin: 0 auto;
+      }
+      .label {
+        font-size: 0.7rem;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: #e11d48;
+      }
+      h1 {
+        font-family: Georgia, 'Times New Roman', serif;
+        font-size: clamp(2rem, 8vw, 2.6rem);
+        margin: 0.35rem 0 0;
+        line-height: 1;
+      }
+      p {
+        color: var(--mist);
+        font-size: 0.9rem;
+        line-height: 1.45;
+      }
+      .card {
+        background: var(--panel);
+        border: 1px solid rgb(255 255 255 / 0.1);
+        border-radius: 0.9rem;
+        padding: 0.9rem 1rem;
+        margin-top: 1rem;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        font-size: 0.85rem;
+      }
+      .dot {
+        width: 0.55rem;
+        height: 0.55rem;
+        border-radius: 999px;
+        background: #57534e;
+      }
+      .dot.on {
+        background: #059669;
+      }
+      .dot.err {
+        background: #e11d48;
+      }
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0.6rem 0 0;
+      }
+      li {
+        word-break: break-all;
+        font-family: ui-monospace, monospace;
+        font-size: 0.85rem;
+        padding: 0.55rem 0;
+        border-top: 1px solid rgb(255 255 255 / 0.06);
+      }
+      li:first-child {
+        border-top: 0;
+      }
+      .actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+        margin-top: 1rem;
+      }
+      button {
+        min-height: 44px;
+        border: 0;
+        border-radius: 0.75rem;
+        padding: 0.7rem 1rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        touch-action: manipulation;
+      }
+      .primary {
+        background: var(--crimson);
+        color: #fff;
+      }
+      .ghost {
+        background: transparent;
+        color: var(--paper);
+        border: 1px solid rgb(255 255 255 / 0.15);
+      }
+      #log {
+        margin-top: 0.75rem;
+        max-height: 8rem;
+        overflow: auto;
+        font-family: ui-monospace, monospace;
+        font-size: 0.7rem;
+        color: #78716c;
+        white-space: pre-wrap;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="label">Host console</div>
+      <h1>Nocturna</h1>
+      <p>
+        Avvia il server sulla LAN. I giocatori aprono l’URL dal telefono (o
+        scansionano il QR in lobby) — senza installare Node.
+      </p>
+
+      <div class="card">
+        <div class="status">
+          <span class="dot" id="dot"></span>
+          <span id="statusText">Avvio…</span>
+        </div>
+        <ul id="urls"></ul>
+      </div>
+
+      <div class="actions">
+        <button class="primary" id="openBtn" type="button" disabled>
+          Apri sul computer Host
+        </button>
+        <button class="ghost" id="refreshBtn" type="button">Aggiorna</button>
+        <button class="ghost" id="quitBtn" type="button">Chiudi Host</button>
+      </div>
+      <div id="log"></div>
+    </main>
+    <script>
+      const dot = document.getElementById('dot');
+      const statusText = document.getElementById('statusText');
+      const urlsEl = document.getElementById('urls');
+      const openBtn = document.getElementById('openBtn');
+      const refreshBtn = document.getElementById('refreshBtn');
+      const quitBtn = document.getElementById('quitBtn');
+      const logEl = document.getElementById('log');
+      let localUrl = null;
+
+      function render(status) {
+        if (!status) return;
+        if (status.running) {
+          dot.className = 'dot on';
+          statusText.textContent = 'Server attivo · porta ' + status.port;
+          openBtn.disabled = false;
+          localUrl = status.localUrl;
+          const all = [status.localUrl, ...(status.lanUrls || [])];
+          urlsEl.innerHTML = all
+            .map((u) => '<li>' + u + '</li>')
+            .join('');
+        } else {
+          dot.className = 'dot err';
+          statusText.textContent = status.error || 'Server spento';
+          openBtn.disabled = true;
+          urlsEl.innerHTML = '';
+        }
+      }
+
+      async function refresh() {
+        try {
+          const status = await window.nocturnaHost.getStatus();
+          render(status);
+        } catch (e) {
+          render({ running: false, error: String(e) });
+        }
+      }
+
+      window.nocturnaHost.onStatus(render);
+      window.nocturnaHost.onLog((line) => {
+        logEl.textContent += line + '\n';
+        logEl.scrollTop = logEl.scrollHeight;
+      });
+
+      openBtn.addEventListener('click', () => {
+        if (localUrl) window.nocturnaHost.openLocal(localUrl);
+      });
+      refreshBtn.addEventListener('click', refresh);
+      quitBtn.addEventListener('click', () => window.nocturnaHost.quit());
+      refresh();
+    </script>
+  </body>
+</html>

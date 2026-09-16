@@ -1,0 +1,90 @@
+{
+  "name": "nocturna-host",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Nocturna portable Host — bundles Node server + SPA for LAN play",
+  "main": "main.cjs",
+  "author": "Nocturna",
+  "license": "SEE LICENSE IN ../LICENSE",
+  "scripts": {
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder",
+    "dist:win": "electron-builder --win portable zip",
+    "dist:linux": "electron-builder --linux AppImage",
+    "dist:mac": "electron-builder --mac dir zip",
+    "dist:all": "electron-builder -mwl"
+  },
+  "devDependencies": {
+    "electron": "^35.0.0",
+    "electron-builder": "^25.1.8"
+  },
+  "build": {
+    "appId": "app.nocturna.host",
+    "productName": "Nocturna",
+    "copyright": "Nocturna",
+    "directories": {
+      "output": "dist",
+      "buildResources": "build"
+    },
+    "files": [
+      "main.cjs",
+      "preload.cjs",
+      "ui/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      {
+        "from": "embed",
+        "to": "embed",
+        "filter": ["**/*"]
+      }
+    ],
+    "asar": true,
+    "artifactName": "Nocturna-${version}-${os}-${arch}.${ext}",
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": ["x64"]
+        },
+        {
+          "target": "zip",
+          "arch": ["x64"]
+        }
+      ],
+      "signAndEditExecutable": false
+    },
+    "portable": {
+      "artifactName": "Nocturna-${version}-windows-portable.exe"
+    },
+    "linux": {
+      "target": [
+        {
+          "target": "AppImage",
+          "arch": ["x64"]
+        }
+      ],
+      "category": "Game",
+      "synopsis": "Nocturna social deduction LAN host",
+      "description": "Hosts a local Nocturna game server and SPA for phones on the same network.",
+      "executableName": "nocturna"
+    },
+    "mac": {
+      "target": [
+        {
+          "target": "zip",
+          "arch": ["x64", "arm64"]
+        },
+        {
+          "target": "dir",
+          "arch": ["x64", "arm64"]
+        }
+      ],
+      "category": "public.app-category.games",
+      "identity": null,
+      "hardenedRuntime": false
+    },
+    "publish": null
+  }
+}

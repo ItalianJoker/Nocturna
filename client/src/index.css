@@ -1,0 +1,356 @@
+@import 'tailwindcss';
+
+/**
+ * Nocturna visual language: deep night (OLED), crimson/amber accents.
+ * Avoids purple-gradient / cream-serif AI defaults. Night stealth screens
+ * force pure #000 to keep eyelid-visible luminance minimal.
+ *
+ * MOBILE-FIRST (hard requirement): every screen must play on phones
+ * (~360–430px), tablets, and small laptops — fluid type/spacing, ≥44px
+ * touch targets, safe-area insets, zero horizontal scroll.
+ */
+:root {
+  --nocturna-black: #000000;
+  --nocturna-ink: #0a0a0c;
+  --nocturna-panel: #121218;
+  --nocturna-crimson: #9f1239;
+  --nocturna-crimson-hot: #e11d48;
+  --nocturna-amber: #d97706;
+  --nocturna-mist: #a8a29e;
+  --nocturna-paper: #e7e5e4;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'DM Sans', system-ui, sans-serif;
+
+  /* Fluid type scale — readable at 360px, comfortable at 430px+ */
+  --text-xs: clamp(0.7rem, 0.65rem + 0.2vw, 0.75rem);
+  --text-sm: clamp(0.8125rem, 0.75rem + 0.3vw, 0.9375rem);
+  --text-base: clamp(0.9375rem, 0.875rem + 0.35vw, 1.0625rem);
+  --text-lg: clamp(1.05rem, 0.95rem + 0.5vw, 1.25rem);
+  --text-xl: clamp(1.2rem, 1.05rem + 0.7vw, 1.5rem);
+  --text-2xl: clamp(1.45rem, 1.2rem + 1.1vw, 1.875rem);
+  --text-3xl: clamp(1.75rem, 1.35rem + 1.6vw, 2.25rem);
+  --text-4xl: clamp(2rem, 1.5rem + 2.2vw, 2.75rem);
+  --text-hero: clamp(2.5rem, 1.75rem + 4vw, 3.75rem);
+
+  /* Fluid spacing + notch / home-indicator safe areas */
+  --space-page-x: clamp(1rem, 0.75rem + 2vw, 1.5rem);
+  --space-page-y: clamp(1rem, 0.75rem + 1.5vw, 1.75rem);
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --touch-min: 44px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  /* Prevent iOS text inflation and accidental horizontal pan */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  overflow-x: hidden;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+  min-height: 100dvh;
+  max-width: 100vw;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  line-height: 1.45;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  background:
+    radial-gradient(ellipse 120% 80% at 50% -20%, #1c1018 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 100% 100%, #12101a 0%, transparent 45%),
+    var(--nocturna-ink);
+  color: var(--nocturna-paper);
+  /* Tap highlight muted — night stealth must not flash white */
+  -webkit-tap-highlight-color: transparent;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+  /* iOS: avoid auto-zoom on focus (<16px triggers zoom) */
+  font-size: max(16px, var(--text-base));
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+/* Full-bleed mobile page shell with safe areas */
+.page-shell {
+  width: 100%;
+  max-width: 28rem; /* ~448px — phone column; tablets still stack */
+  margin-inline: auto;
+  min-height: 100dvh;
+  min-height: 100svh;
+  padding-top: calc(var(--space-page-y) + var(--safe-top));
+  padding-right: calc(var(--space-page-x) + var(--safe-right));
+  padding-bottom: calc(var(--space-page-y) + var(--safe-bottom));
+  padding-left: calc(var(--space-page-x) + var(--safe-left));
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+/* Wider master console on tablets, still single-column scroll on phones */
+.page-shell--master {
+  max-width: 36rem;
+}
+
+.fluid-hero {
+  font-size: var(--text-hero);
+  line-height: 0.95;
+  letter-spacing: -0.02em;
+  word-break: break-word;
+}
+
+.fluid-title {
+  font-size: var(--text-4xl);
+  line-height: 1.1;
+  word-break: break-word;
+}
+
+.fluid-h2 {
+  font-size: var(--text-xl);
+  line-height: 1.2;
+}
+
+.fluid-body {
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.fluid-label {
+  font-size: var(--text-xs);
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+
+/* Stealth night: absolute OLED black, no ambient gradients. */
+.night-stealth {
+  background: #000000 !important;
+  color: #2a2a2a;
+  width: 100%;
+  max-width: 100vw;
+  min-height: 100dvh;
+  min-height: 100svh;
+  padding-top: calc(var(--space-page-y) + var(--safe-top));
+  padding-right: calc(var(--space-page-x) + var(--safe-right));
+  padding-bottom: calc(var(--space-page-y) + var(--safe-bottom) + 0.5rem);
+  padding-left: calc(var(--space-page-x) + var(--safe-left));
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.night-stealth .night-active-text {
+  color: #3f3f46;
+}
+
+.night-stealth button,
+.night-stealth .night-control {
+  background: #0a0a0a;
+  border-color: #1a1a1a;
+  color: #3f3f46;
+  min-height: var(--touch-min);
+}
+
+.night-stealth button:active,
+.night-stealth button.selected {
+  background: #111111;
+  border-color: #2a1518;
+  color: #52525b;
+}
+
+@keyframes nocturna-breathe {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@keyframes nocturna-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes nocturna-pulse-ring {
+  0% {
+    transform: scale(0.92);
+    opacity: 0.5;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-breathe,
+  .animate-rise,
+  .animate-pulse-ring {
+    animation: none !important;
+  }
+}
+
+.animate-breathe {
+  animation: nocturna-breathe 4.5s ease-in-out infinite;
+}
+
+.animate-rise {
+  animation: nocturna-rise 0.45s ease-out both;
+}
+
+.animate-pulse-ring {
+  animation: nocturna-pulse-ring 2.8s ease-out infinite;
+}
+
+/**
+ * Touch targets: WCAG / Apple HIG ~44×44 minimum.
+ * Use on every interactive control in game flows.
+ */
+.touch-target {
+  min-height: var(--touch-min);
+  min-width: var(--touch-min);
+  touch-action: manipulation;
+}
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--touch-min);
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  background: var(--nocturna-crimson);
+  color: #fff;
+  font-weight: 600;
+  font-size: var(--text-base);
+  border: none;
+  touch-action: manipulation;
+}
+
+.btn-primary:disabled {
+  opacity: 0.4;
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--touch-min);
+  padding: 0.65rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.15);
+  background: transparent;
+  color: inherit;
+  font-size: var(--text-sm);
+  touch-action: manipulation;
+}
+
+.field-input {
+  width: 100%;
+  min-height: var(--touch-min);
+  border-radius: 0.75rem;
+  border: 1px solid rgb(255 255 255 / 0.1);
+  background: rgb(0 0 0 / 0.5);
+  padding: 0.75rem 1rem;
+  color: var(--nocturna-paper);
+  outline: none;
+}
+
+.field-input:focus {
+  border-color: var(--nocturna-crimson);
+}
+
+/* Scrollable stacks for Master / long lists on short phones */
+.scroll-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Toast must clear home indicator */
+.toast-dock {
+  position: fixed;
+  left: 50%;
+  bottom: calc(1.25rem + var(--safe-bottom));
+  transform: translateX(-50%);
+  width: min(92vw, 24rem);
+  z-index: 50;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  font-size: var(--text-sm);
+  box-shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+}
+
+/* QR join block: never overflow narrow screens */
+.qr-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+}
+
+.qr-block__code {
+  flex: 0 0 auto;
+  padding: 0.5rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  line-height: 0;
+}
+
+.qr-block__code svg {
+  display: block;
+  width: clamp(88px, 28vw, 112px);
+  height: auto;
+}
