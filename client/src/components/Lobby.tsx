@@ -100,7 +100,7 @@ function Welcome({ connected }: { connected: boolean }) {
   };
 
   return (
-    <div className="page-shell relative overflow-hidden">
+    <div className="page-shell relative overflow-x-hidden">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -123,69 +123,90 @@ function Welcome({ connected }: { connected: boolean }) {
       </div>
 
       <div
-        className="mt-8 flex gap-1 rounded-full border border-white/10 bg-black/40 p-1"
+        className="relative z-10 mt-8 flex gap-1 rounded-full border border-white/10 bg-black/40 p-1"
         role="tablist"
         aria-label="Modalità accesso"
       >
-        {(['join', 'create'] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            role="tab"
-            aria-selected={mode === m}
-            onClick={() => setMode(m)}
-            className={`touch-target flex-1 rounded-full py-2.5 text-sm ${
-              mode === m
-                ? 'bg-[var(--nocturna-crimson)] text-white'
-                : 'text-stone-400'
-            }`}
-          >
-            {m === 'join' ? 'Entra' : 'Crea stanza'}
-          </button>
-        ))}
+        <button
+          type="button"
+          role="tab"
+          data-testid="tab-join"
+          aria-selected={mode === 'join'}
+          aria-controls="access-panel"
+          onClick={() => setMode('join')}
+          className={`touch-target relative z-10 flex-1 cursor-pointer select-none rounded-full py-2.5 text-sm ${
+            mode === 'join'
+              ? 'bg-[var(--nocturna-crimson)] text-white'
+              : 'text-stone-400'
+          }`}
+        >
+          Entra
+        </button>
+        <button
+          type="button"
+          role="tab"
+          data-testid="tab-create"
+          aria-selected={mode === 'create'}
+          aria-controls="access-panel"
+          onClick={() => setMode('create')}
+          className={`touch-target relative z-10 flex-1 cursor-pointer select-none rounded-full py-2.5 text-sm ${
+            mode === 'create'
+              ? 'bg-[var(--nocturna-crimson)] text-white'
+              : 'text-stone-400'
+          }`}
+        >
+          Crea stanza
+        </button>
       </div>
 
-      <label className="mt-6 block fluid-label text-stone-500">
-        Nome al tavolo
-        <input
-          className="field-input mt-2 tracking-normal"
-          style={{ letterSpacing: 'normal', textTransform: 'none' }}
-          value={name}
-          maxLength={24}
-          autoComplete="nickname"
-          enterKeyHint="next"
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Es. Luca"
-        />
-      </label>
-
-      {mode === 'join' && (
-        <label className="mt-4 block fluid-label text-stone-500">
-          PIN stanza
+      <div id="access-panel" className="relative z-10">
+        <label className="mt-6 block fluid-label text-stone-500">
+          Nome al tavolo
           <input
-            className="field-input mt-2 text-center font-mono text-2xl tracking-[0.35em]"
-            value={pin}
-            maxLength={6}
-            inputMode="numeric"
-            autoComplete="one-time-code"
-            enterKeyHint="go"
-            onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter') join();
-            }}
-            placeholder="000000"
+            className="field-input mt-2 tracking-normal"
+            style={{ letterSpacing: 'normal', textTransform: 'none' }}
+            value={name}
+            maxLength={24}
+            autoComplete="nickname"
+            enterKeyHint="next"
+            onChange={(e) => setName(e.target.value)}
+            placeholder="Es. Luca"
           />
         </label>
-      )}
 
-      <button
-        type="button"
-        disabled={busy || !connected}
-        onClick={mode === 'join' ? join : create}
-        className="btn-primary mt-8"
-      >
-        {busy ? 'Attendi…' : mode === 'join' ? 'Entra in stanza' : 'Apri lobby'}
-      </button>
+        {mode === 'join' && (
+          <label className="mt-4 block fluid-label text-stone-500">
+            PIN stanza
+            <input
+              className="field-input mt-2 text-center font-mono text-2xl tracking-[0.35em]"
+              value={pin}
+              maxLength={6}
+              inputMode="numeric"
+              autoComplete="one-time-code"
+              enterKeyHint="go"
+              onChange={(e) => setPin(e.target.value.replace(/\D/g, ''))}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') join();
+              }}
+              placeholder="000000"
+            />
+          </label>
+        )}
+
+        <button
+          type="button"
+          disabled={busy || !connected}
+          onClick={mode === 'join' ? join : create}
+          className="btn-primary mt-8"
+          data-testid="access-submit"
+        >
+          {busy
+            ? 'Attendi…'
+            : mode === 'join'
+              ? 'Entra in stanza'
+              : 'Apri lobby'}
+        </button>
+      </div>
 
       <p className="mt-6 flex items-center justify-center gap-2 text-xs text-stone-600">
         {connected ? (
