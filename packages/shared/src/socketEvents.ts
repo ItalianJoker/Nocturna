@@ -21,6 +21,10 @@ import type {
 /** Discriminated union of views a client may receive on sync. */
 export type SyncStatePayload = SanitizedGameState | MasterGameState;
 
+/**
+ * Type guard: true when a sync payload is the ASSISTED Master God-View.
+ * Clients must never treat Master fields as present on sanitised views.
+ */
 export function isMasterGameState(
   state: SyncStatePayload,
 ): state is MasterGameState {

@@ -10,10 +10,30 @@ UI languages: **Italian + English** (i18next; preference persisted).
 
 ---
 
+## Quickstart & Setup
+
+```bash
+# Requires Node.js >= 20
+npm install
+npm run build:shared
+npm test                 # shared regression suite (node:test via tsx)
+npm run typecheck
+npm run build            # shared + server + client
+npm run dev              # server watch + Vite SPA (:5173 → :3001)
+# or production-style:
+npm start                # node server/dist (serves SPA + API on PORT)
+```
+
+Health: `GET /api/health` · Advertise: `GET /api/host-info`
+
+See [CHANGELOG.md](./CHANGELOG.md) for release history. Ops details: [MANUAL.md](./MANUAL.md).
+
+---
+
 ## Hard constraints
 
 ### Extreme mobile responsiveness
-Playable on phones (~360–430px+), tablets, small laptops: fluid type, ≥44px targets, safe-area insets, no horizontal scroll. QR join must work on constrained mobile browsers.
+Playable on phones (~360–430px+), tablets, small laptops: fluid type, ≥44px targets, safe-area insets, no horizontal scroll. Desktop (`lg`+) widens Host/Master panes without breaking mouse-wheel scroll. QR join must work on constrained mobile browsers.
 
 ### Never localhost in QR / join links
 - Server binds `0.0.0.0` by default.
@@ -38,6 +58,36 @@ Locale files: `client/src/locales/it.json`, `client/src/locales/en.json`. Langua
 
 ---
 
+## Dependencies & Libraries Stack
+
+Versions are ranges from workspace `package.json` files (exact resolved versions live in the lockfile). Prefer **named / granular imports** where libraries support tree-shaking (`lucide-react` icons, shared barrel only at boundaries).
+
+| Package | Version | Scope | Purpose | Tree-shaking / import notes |
+|---------|---------|-------|---------|-----------------------------|
+| `@nocturna/shared` | `*` (workspace) | runtime (server, client) | Types, night engine, sanitize, LAN advertise, socket contract | Single ESM barrel `packages/shared/src/index.ts` |
+| `fastify` | `^5.2.1` | runtime (server) | HTTP API + static SPA | N/A |
+| `@fastify/cors` | `^11.0.1` | runtime (server) | CORS for Vite / Host | N/A |
+| `@fastify/static` | `^8.1.1` | runtime (server) | Serve `client/dist` | N/A |
+| `socket.io` | `^4.8.1` | runtime (server) | Realtime sync + recovery | Typed via shared `socketEvents` |
+| `socket.io-client` | `^4.8.1` | runtime (client) | Browser socket | Matches server major |
+| `nanoid` | `^5.1.5` | runtime (server) | Room PIN / IDs | `customAlphabet` only |
+| `react` / `react-dom` | `^19.0.0` | runtime (client) | SPA UI | ESM |
+| `zustand` | `^5.0.3` | runtime (client) | Session + last sync view | Named store API |
+| `i18next` / `react-i18next` | `^26` / `^17` | runtime (client) | IT/EN strings | Locale JSON; no hardcoded UI copy |
+| `qrcode.react` | `^4.2.0` | runtime (client) | Lobby QR (`QRCodeSVG`) | Named export |
+| `lucide-react` | `^0.483.0` | runtime (client) | Icons | Per-icon named imports |
+| `howler` | `^2.2.4` | runtime (client) | Ambient audio | Optional Host setting |
+| `vite` + `@vitejs/plugin-react` | `^6` / `^4` | dev (client) | Bundler / HMR | — |
+| `tailwindcss` + `@tailwindcss/vite` | `^4.0.14` | dev (client) | Utility CSS | Via Vite plugin |
+| `typescript` | `^5.8.2` | dev (all) | Build / typecheck | — |
+| `tsx` | `^4.19.3` | dev (shared, server) | Tests + `tsx watch` | — |
+| `concurrently` | `^9.1.2` | dev (root) | Parallel `npm run dev` | Script only |
+| `electron` / `electron-builder` | `^35` / `^25` | dev (`host/`) | Portable Host packaging | Outside npm workspaces |
+
+**No safe uninstall candidates** at last Safety-First audit — every declared dependency is referenced by source or scripts.
+
+---
+
 ## Deploy without Node on player devices
 
 ### 1) Docker
@@ -56,8 +106,6 @@ NOCTURNA_PORT=8080 ADVERTISE_HOST=192.168.1.20 docker compose up --build
 docker build -t nocturna .
 docker run --rm -p 3001:3001 -e HOST=0.0.0.0 -e PORT=3001 nocturna
 ```
-
-Health: `GET /api/health` · Advertise: `GET /api/host-info`
 
 ### 2) Portable Host (Windows / Linux AppImage / macOS)
 
@@ -98,11 +146,11 @@ nocturna/
 ├── Dockerfile
 ├── docker-compose.yml
 ├── README.md
+├── CHANGELOG.md
 └── MANUAL.md
 ```
 
 ### RoomSettings (Host-configurable, server-authoritative)
-Previously magic / partial UI — now editable in lobby:
 - `moderatorMode`, `hapticPolicy`, `ambientAudioEnabled`, `allowLateJoin`
 - `voteVisibility`, `tieBreakPolicy`
 - `discussionDurationMs`, `tribunalDurationMs`, `defaultNightTurnDurationMs`
@@ -124,9 +172,39 @@ Previously magic / partial UI — now editable in lobby:
 | `npm run dev` | Shared build + server watch + Vite |
 | `npm run build` | Build shared, server, client |
 | `npm start` | Run compiled server |
-| `npm test` | Shared engine + LAN advertise tests |
+| `npm test` | Shared regression suite (engine, LAN, sanitize, wins, socket freeze) |
+| `npm run typecheck` | tsc across workspaces |
 | `npm run dist:docker:up` | Docker Compose up --build |
 | `npm run dist:host:linux` / `:win` / `:mac` | Portable Host artifacts |
+
+---
+
+## AI Context & Developer Guidelines
+
+For humans and coding agents working on this repo:
+
+### Architecture invariants (do not break)
+1. **Server-authoritative** — clients never compute win/night outcomes; they render `SanitizedGameState` / `MasterGameState` from `sync:state`.
+2. **Anti-leak** — never send raw `GameState` to browsers. Use `viewForPlayer` / `toSanitizedGameState` / `toMasterGameState` only.
+3. **No localhost in QR/join** — `lanAdvertise` + `/api/host-info`; fail loud if only loopback.
+4. **Configurable port** — `PORT` / `--port` / Host UI must stay reflected in advertise URLs.
+5. **i18n** — user-facing strings go through i18next (`it.json` / `en.json`); no new hardcoded UI copy.
+6. **Data-driven roles** — behaviour lives in `RoleDefinition` + `WakeSchedule`, not role `switch` trees in app code.
+7. **Haptics default** — individual role vibration is forbidden; only optional universal heartbeat.
+8. **Socket contract** — event names in `packages/shared/src/socketEvents.ts` are frozen by `socketEvents.test.ts`; rename only with a coordinated PR.
+
+### Library policy for AI
+- Do **not** add dependencies without a clear need; prefer Node built-ins / existing stack.
+- Do **not** remove packages without proving zero imports (including scripts).
+- Prefer stable APIs; avoid deprecated Socket.io / React patterns.
+- Keep `@nocturna/shared` as the single source of types + engine; do not duplicate LAN logic in Host without updating shared tests.
+- Zero Regression: public signatures, defaults (`DEFAULT_ROOM_SETTINGS`, `DEFAULT_SERVER_PORT`), and ack shapes must stay identical unless the user explicitly requests a breaking change.
+
+### Watchlist (do not delete casually)
+- `injectTriggeredTurn` — ON_TRIGGER Master/effect hook (not yet wired from FSM).
+- `listRoomIds` / `deleteRoom` — reserved room GC / admin.
+- `LAST_SURVIVOR` win branch — currently dominated by `IMPOSTORS===0 → VILLAGE` priority (documented in tests).
+- Host Electron `main.cjs` advertise helpers — parallel to shared `lanAdvertise` (consolidation is careful, not drive-by).
 
 ---
 

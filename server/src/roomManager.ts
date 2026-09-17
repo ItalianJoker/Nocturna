@@ -61,10 +61,18 @@ export function getRoom(roomId: RoomId): GameState | undefined {
   return rooms.get(roomId);
 }
 
+/**
+ * Lists active room IDs. Reserved for admin/GC tooling — currently unused by
+ * the socket FSM; keep exported for future Host diagnostics (watchlist).
+ */
 export function listRoomIds(): RoomId[] {
   return [...rooms.keys()];
 }
 
+/**
+ * Tears down a room and its session tokens. Reserved for idle GC / Host admin
+ * (watchlist — not wired to a socket event yet). Safe no-op if room missing.
+ */
 export function deleteRoom(roomId: RoomId): void {
   const room = rooms.get(roomId);
   if (room) {
