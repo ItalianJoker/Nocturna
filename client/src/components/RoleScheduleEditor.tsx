@@ -100,7 +100,7 @@ export function RoleScheduleEditor({
       <p className="mb-4 fluid-body text-[var(--nocturna-mist)]">
         {t('roles.editorHelp')}
       </p>
-      <ul className="flex flex-col gap-3">
+      <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
         {sorted.map((role) => (
           <li
             key={role.id}
@@ -140,7 +140,7 @@ export function RoleScheduleEditor({
                 </button>
               </div>
             </div>
-            <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[380px]:grid-cols-2">
+            <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[380px]:grid-cols-2 xl:grid-cols-4">
               <label className="flex flex-col gap-1 text-stone-400">
                 {t('roles.frequency')}
                 <select

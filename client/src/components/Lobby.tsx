@@ -101,7 +101,7 @@ function Welcome({ connected }: { connected: boolean }) {
   };
 
   return (
-    <div className="page-shell relative overflow-x-hidden">
+    <div className="page-shell relative">
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0 -z-10"
@@ -306,7 +306,7 @@ function LobbyRoom() {
   };
 
   return (
-    <div className="page-shell gap-5">
+    <div className={`page-shell gap-5 ${isHost ? 'page-shell--host' : ''}`}>
       <div className="flex items-start justify-between gap-2">
         <header className="min-w-0 shrink">
           <p className="fluid-label text-stone-500">{t('lobby.title')}</p>
@@ -320,293 +320,309 @@ function LobbyRoom() {
         <LanguageSwitcher />
       </div>
 
-      <div className="qr-block rounded-2xl border border-white/10 bg-black/40 p-3 sm:p-4">
-        {joinUrl ? (
-          <div className="qr-block__code">
-            <QRCodeSVG value={joinUrl} size={112} level="M" marginSize={0} />
-          </div>
-        ) : (
-          <div className="flex min-h-[112px] min-w-[112px] items-center justify-center rounded-xl border border-rose-900/50 bg-rose-950/40 p-2 text-center text-xs text-rose-200">
-            {t('lobby.qrUnavailable')}
-          </div>
-        )}
-        <div className="min-w-0 flex-1 fluid-body text-stone-400">
-          <p>{t('lobby.scanQr')}</p>
-          {joinUrl ? (
-            <p className="mt-2 break-all font-mono text-xs text-stone-500">
-              {joinUrl}
-            </p>
-          ) : (
-            <p className="mt-2 text-sm text-rose-300">
-              {advertise.error ?? t('lobby.lanError')}
-            </p>
-          )}
-          <div className="mt-2 flex flex-wrap gap-3">
-            <button
-              type="button"
-              className="touch-target inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
-              onClick={() => {
-                void navigator.clipboard.writeText(view.roomId);
-                setToast({ level: 'info', message: t('lobby.pinCopied') });
-              }}
-            >
-              <Copy className="h-3.5 w-3.5" /> {t('lobby.copyPin')}
-            </button>
-            {joinUrl && (
-              <button
-                type="button"
-                className="touch-target inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
-                onClick={() => {
-                  void navigator.clipboard.writeText(joinUrl);
-                  setToast({ level: 'info', message: t('lobby.linkCopied') });
-                }}
-              >
-                <Copy className="h-3.5 w-3.5" /> {t('lobby.copyLink')}
-              </button>
+      <div className="desktop-split">
+        <div className="desktop-split__main space-y-5">
+          <div className="qr-block rounded-2xl border border-white/10 bg-black/40 p-3 sm:p-4">
+            {joinUrl ? (
+              <div className="qr-block__code">
+                <QRCodeSVG value={joinUrl} size={112} level="M" marginSize={0} />
+              </div>
+            ) : (
+              <div className="flex min-h-[112px] min-w-[112px] items-center justify-center rounded-xl border border-rose-900/50 bg-rose-950/40 p-2 text-center text-xs text-rose-200">
+                {t('lobby.qrUnavailable')}
+              </div>
             )}
+            <div className="min-w-0 flex-1 fluid-body text-stone-400">
+              <p>{t('lobby.scanQr')}</p>
+              {joinUrl ? (
+                <p className="mt-2 break-all font-mono text-xs text-stone-500">
+                  {joinUrl}
+                </p>
+              ) : (
+                <p className="mt-2 text-sm text-rose-300">
+                  {advertise.error ?? t('lobby.lanError')}
+                </p>
+              )}
+              <div className="mt-2 flex flex-wrap gap-3">
+                <button
+                  type="button"
+                  className="touch-target inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
+                  onClick={() => {
+                    void navigator.clipboard.writeText(view.roomId);
+                    setToast({ level: 'info', message: t('lobby.pinCopied') });
+                  }}
+                >
+                  <Copy className="h-3.5 w-3.5" /> {t('lobby.copyPin')}
+                </button>
+                {joinUrl && (
+                  <button
+                    type="button"
+                    className="touch-target inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
+                    onClick={() => {
+                      void navigator.clipboard.writeText(joinUrl);
+                      setToast({ level: 'info', message: t('lobby.linkCopied') });
+                    }}
+                  >
+                    <Copy className="h-3.5 w-3.5" /> {t('lobby.copyLink')}
+                  </button>
+                )}
+              </div>
+            </div>
           </div>
+
+          <section className="shrink-0">
+            <h2 className="font-display fluid-h2">{t('lobby.atTable')}</h2>
+            <ul className="list-pane mt-2 space-y-1">
+              {view.players.map((p) => (
+                <li
+                  key={p.id}
+                  className="flex min-h-[var(--touch-min)] items-center justify-between gap-2 rounded-lg px-2 py-2 fluid-body"
+                >
+                  <span className="truncate">
+                    {p.displayName}
+                    {p.isHost ? ` · ${t('lobby.host')}` : ''}
+                    {p.isMaster ? ` · ${t('lobby.master')}` : ''}
+                  </span>
+                  <span
+                    className={`h-2 w-2 shrink-0 rounded-full ${
+                      p.isConnected ? 'bg-emerald-600' : 'bg-stone-700'
+                    }`}
+                  />
+                </li>
+              ))}
+            </ul>
+          </section>
         </div>
-      </div>
 
-      <section className="shrink-0">
-        <h2 className="font-display fluid-h2">{t('lobby.atTable')}</h2>
-        <ul className="mt-2 max-h-[30dvh] space-y-1 overflow-y-auto overscroll-contain">
-          {view.players.map((p) => (
-            <li
-              key={p.id}
-              className="flex min-h-[var(--touch-min)] items-center justify-between gap-2 rounded-lg px-2 py-2 fluid-body"
-            >
-              <span className="truncate">
-                {p.displayName}
-                {p.isHost ? ` · ${t('lobby.host')}` : ''}
-                {p.isMaster ? ` · ${t('lobby.master')}` : ''}
-              </span>
-              <span
-                className={`h-2 w-2 shrink-0 rounded-full ${
-                  p.isConnected ? 'bg-emerald-600' : 'bg-stone-700'
-                }`}
-              />
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      {isHost && (
-        <div className="scroll-stack gap-5">
-          <section className="space-y-3 rounded-2xl border border-white/10 bg-[var(--nocturna-panel)]/80 p-3 sm:p-4">
-            <h2 className="font-display fluid-h2">{t('lobby.hostSettings')}</h2>
-            <label className="flex flex-col gap-1 text-xs text-stone-400">
-              {t('lobby.roomName')}
-              <input
-                className="field-input"
-                value={view.settings.roomName}
-                onChange={(e) => patchSettings({ roomName: e.target.value })}
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-xs text-stone-400">
-              {t('lobby.mode')}
-              <select
-                className="field-input"
-                value={view.settings.moderatorMode}
-                onChange={(e) =>
-                  patchSettings({
-                    moderatorMode: e.target
-                      .value as RoomSettings['moderatorMode'],
-                  })
-                }
-              >
-                <option value="AUTOMATED">{t('lobby.modeAutomated')}</option>
-                <option value="ASSISTED">{t('lobby.modeAssisted')}</option>
-              </select>
-            </label>
-            {view.settings.moderatorMode === 'ASSISTED' && (
-              <label className="flex flex-col gap-1 text-xs text-stone-400">
-                {t('lobby.masterLabel')}
-                <select
-                  className="field-input"
-                  value={
-                    view.players.find((p) => p.isMaster)?.id ?? session.playerId
-                  }
-                  onChange={(e) =>
-                    getSocket().emit('lobby:setMaster', {
-                      playerId: e.target.value,
-                    })
-                  }
-                >
-                  {view.players.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.displayName}
-                    </option>
-                  ))}
-                </select>
-              </label>
-            )}
-            <label className="flex flex-col gap-1 text-xs text-stone-400">
-              {t('lobby.haptics')}
-              <select
-                className="field-input"
-                value={view.settings.hapticPolicy}
-                onChange={(e) =>
-                  patchSettings({
-                    hapticPolicy: e.target
-                      .value as RoomSettings['hapticPolicy'],
-                  })
-                }
-              >
-                <option value="NONE">{t('lobby.hapticsNone')}</option>
-                <option value="UNIVERSAL_HEARTBEAT">
-                  {t('lobby.hapticsHeartbeat')}
-                </option>
-              </select>
-            </label>
-            <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
-              <span>{t('lobby.ambientAudio')}</span>
-              <input
-                type="checkbox"
-                className="h-5 w-5 shrink-0"
-                checked={view.settings.ambientAudioEnabled}
-                onChange={(e) =>
-                  patchSettings({ ambientAudioEnabled: e.target.checked })
-                }
-              />
-            </label>
-            <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
-              <span>{t('lobby.allowLateJoin')}</span>
-              <input
-                type="checkbox"
-                className="h-5 w-5 shrink-0"
-                checked={view.settings.allowLateJoin}
-                onChange={(e) =>
-                  patchSettings({ allowLateJoin: e.target.checked })
-                }
-              />
-            </label>
-            <label className="flex flex-col gap-1 text-xs text-stone-400">
-              {t('lobby.voteVisibility')}
-              <select
-                className="field-input"
-                value={view.settings.voteVisibility}
-                onChange={(e) =>
-                  patchSettings({
-                    voteVisibility: e.target
-                      .value as RoomSettings['voteVisibility'],
-                  })
-                }
-              >
-                <option value="SECRET">{t('lobby.voteSecret')}</option>
-                <option value="PUBLIC">{t('lobby.votePublic')}</option>
-              </select>
-            </label>
-            <label className="flex flex-col gap-1 text-xs text-stone-400">
-              {t('lobby.tieBreak')}
-              <select
-                className="field-input"
-                value={view.settings.tieBreakPolicy}
-                onChange={(e) =>
-                  patchSettings({
-                    tieBreakPolicy: e.target
-                      .value as RoomSettings['tieBreakPolicy'],
-                  })
-                }
-              >
-                <option value="NO_ELIMINATION">{t('lobby.tieNoBurn')}</option>
-                <option value="RUNOFF">{t('lobby.tieRunoff')}</option>
-              </select>
-            </label>
-            <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
-              {(
-                [
-                  ['discussionDurationMs', 'lobby.discussionSec'],
-                  ['tribunalDurationMs', 'lobby.tribunalSec'],
-                  ['defaultNightTurnDurationMs', 'lobby.nightTurnSec'],
-                  ['dawnDurationMs', 'lobby.dawnSec'],
-                  ['ballotRevealDurationMs', 'lobby.ballotSec'],
-                ] as const
-              ).map(([key, labelKey]) => (
-                <label
-                  key={key}
-                  className="flex flex-col gap-1 text-xs text-stone-400"
-                >
-                  {t(labelKey)}
+        {isHost && (
+          <div className="desktop-split__side scroll-stack gap-5">
+            <section className="space-y-3 rounded-2xl border border-white/10 bg-[var(--nocturna-panel)]/80 p-3 sm:p-4 lg:p-5">
+              <h2 className="font-display fluid-h2">{t('lobby.hostSettings')}</h2>
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                <label className="flex flex-col gap-1 text-xs text-stone-400 md:col-span-2 lg:col-span-1">
+                  {t('lobby.roomName')}
                   <input
-                    type="number"
-                    min={5}
-                    max={3600}
                     className="field-input"
-                    value={msToSec(view.settings[key] ?? DEFAULT_ROOM_SETTINGS[key])}
+                    value={view.settings.roomName}
+                    onChange={(e) => patchSettings({ roomName: e.target.value })}
+                  />
+                </label>
+                <label className="flex flex-col gap-1 text-xs text-stone-400">
+                  {t('lobby.mode')}
+                  <select
+                    className="field-input"
+                    value={view.settings.moderatorMode}
                     onChange={(e) =>
                       patchSettings({
-                        [key]: Math.max(5, Number(e.target.value) || 5) * 1000,
+                        moderatorMode: e.target
+                          .value as RoomSettings['moderatorMode'],
+                      })
+                    }
+                  >
+                    <option value="AUTOMATED">{t('lobby.modeAutomated')}</option>
+                    <option value="ASSISTED">{t('lobby.modeAssisted')}</option>
+                  </select>
+                </label>
+                {view.settings.moderatorMode === 'ASSISTED' && (
+                  <label className="flex flex-col gap-1 text-xs text-stone-400">
+                    {t('lobby.masterLabel')}
+                    <select
+                      className="field-input"
+                      value={
+                        view.players.find((p) => p.isMaster)?.id ??
+                        session.playerId
+                      }
+                      onChange={(e) =>
+                        getSocket().emit('lobby:setMaster', {
+                          playerId: e.target.value,
+                        })
+                      }
+                    >
+                      {view.players.map((p) => (
+                        <option key={p.id} value={p.id}>
+                          {p.displayName}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+                )}
+                <label className="flex flex-col gap-1 text-xs text-stone-400">
+                  {t('lobby.haptics')}
+                  <select
+                    className="field-input"
+                    value={view.settings.hapticPolicy}
+                    onChange={(e) =>
+                      patchSettings({
+                        hapticPolicy: e.target
+                          .value as RoomSettings['hapticPolicy'],
+                      })
+                    }
+                  >
+                    <option value="NONE">{t('lobby.hapticsNone')}</option>
+                    <option value="UNIVERSAL_HEARTBEAT">
+                      {t('lobby.hapticsHeartbeat')}
+                    </option>
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1 text-xs text-stone-400">
+                  {t('lobby.voteVisibility')}
+                  <select
+                    className="field-input"
+                    value={view.settings.voteVisibility}
+                    onChange={(e) =>
+                      patchSettings({
+                        voteVisibility: e.target
+                          .value as RoomSettings['voteVisibility'],
+                      })
+                    }
+                  >
+                    <option value="SECRET">{t('lobby.voteSecret')}</option>
+                    <option value="PUBLIC">{t('lobby.votePublic')}</option>
+                  </select>
+                </label>
+                <label className="flex flex-col gap-1 text-xs text-stone-400">
+                  {t('lobby.tieBreak')}
+                  <select
+                    className="field-input"
+                    value={view.settings.tieBreakPolicy}
+                    onChange={(e) =>
+                      patchSettings({
+                        tieBreakPolicy: e.target
+                          .value as RoomSettings['tieBreakPolicy'],
+                      })
+                    }
+                  >
+                    <option value="NO_ELIMINATION">{t('lobby.tieNoBurn')}</option>
+                    <option value="RUNOFF">{t('lobby.tieRunoff')}</option>
+                  </select>
+                </label>
+                <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
+                  <span>{t('lobby.ambientAudio')}</span>
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 shrink-0"
+                    checked={view.settings.ambientAudioEnabled}
+                    onChange={(e) =>
+                      patchSettings({ ambientAudioEnabled: e.target.checked })
+                    }
+                  />
+                </label>
+                <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
+                  <span>{t('lobby.allowLateJoin')}</span>
+                  <input
+                    type="checkbox"
+                    className="h-5 w-5 shrink-0"
+                    checked={view.settings.allowLateJoin}
+                    onChange={(e) =>
+                      patchSettings({ allowLateJoin: e.target.checked })
+                    }
+                  />
+                </label>
+              </div>
+              <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 lg:grid-cols-3">
+                {(
+                  [
+                    ['discussionDurationMs', 'lobby.discussionSec'],
+                    ['tribunalDurationMs', 'lobby.tribunalSec'],
+                    ['defaultNightTurnDurationMs', 'lobby.nightTurnSec'],
+                    ['dawnDurationMs', 'lobby.dawnSec'],
+                    ['ballotRevealDurationMs', 'lobby.ballotSec'],
+                  ] as const
+                ).map(([key, labelKey]) => (
+                  <label
+                    key={key}
+                    className="flex flex-col gap-1 text-xs text-stone-400"
+                  >
+                    {t(labelKey)}
+                    <input
+                      type="number"
+                      min={5}
+                      max={3600}
+                      className="field-input"
+                      value={msToSec(
+                        view.settings[key] ?? DEFAULT_ROOM_SETTINGS[key],
+                      )}
+                      onChange={(e) =>
+                        patchSettings({
+                          [key]:
+                            Math.max(5, Number(e.target.value) || 5) * 1000,
+                        })
+                      }
+                    />
+                  </label>
+                ))}
+                <label className="flex flex-col gap-1 text-xs text-stone-400">
+                  {t('lobby.assistedMult')}
+                  <input
+                    type="number"
+                    min={1}
+                    max={10}
+                    step={0.5}
+                    className="field-input"
+                    value={view.settings.assistedTimerMultiplier ?? 2}
+                    onChange={(e) =>
+                      patchSettings({
+                        assistedTimerMultiplier: Math.max(
+                          1,
+                          Number(e.target.value) || 2,
+                        ),
                       })
                     }
                   />
                 </label>
-              ))}
-              <label className="flex flex-col gap-1 text-xs text-stone-400">
-                {t('lobby.assistedMult')}
-                <input
-                  type="number"
-                  min={1}
-                  max={10}
-                  step={0.5}
-                  className="field-input"
-                  value={view.settings.assistedTimerMultiplier ?? 2}
-                  onChange={(e) =>
-                    patchSettings({
-                      assistedTimerMultiplier: Math.max(
-                        1,
-                        Number(e.target.value) || 2,
-                      ),
-                    })
-                  }
-                />
-              </label>
-            </div>
-            <div className="flex flex-col gap-2 pt-1 sm:flex-row">
-              <button
-                type="button"
-                onClick={exportPreset}
-                className="btn-ghost w-full flex-1"
-              >
-                <Download className="h-4 w-4" /> {t('lobby.export')}
-              </button>
-              <label className="btn-ghost w-full flex-1 cursor-pointer">
-                <Upload className="h-4 w-4" /> {t('lobby.import')}
-                <input
-                  type="file"
-                  accept="application/json"
-                  className="hidden"
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) void importPresetFile(f);
-                  }}
-                />
-              </label>
-            </div>
-          </section>
+              </div>
+              <div className="flex flex-col gap-2 pt-1 sm:flex-row">
+                <button
+                  type="button"
+                  onClick={exportPreset}
+                  className="btn-ghost w-full flex-1"
+                >
+                  <Download className="h-4 w-4" /> {t('lobby.export')}
+                </button>
+                <label className="btn-ghost w-full flex-1 cursor-pointer">
+                  <Upload className="h-4 w-4" /> {t('lobby.import')}
+                  <input
+                    type="file"
+                    accept="application/json"
+                    className="hidden"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      if (f) void importPresetFile(f);
+                    }}
+                  />
+                </label>
+              </div>
+            </section>
+          </div>
+        )}
 
-          {draftDeck && (
+        {isHost && draftDeck && (
+          <div className="desktop-split__full">
             <RoleScheduleEditor deck={draftDeck} onChange={saveDeck} />
-          )}
+          </div>
+        )}
 
-          <button
-            type="button"
-            className="btn-primary"
-            onClick={() =>
-              getSocket().emit('game:start', {}, (res) => {
-                if (!res?.ok) {
-                  setToast({
-                    level: 'error',
-                    message: res?.error ?? t('lobby.startFailed'),
-                  });
-                }
-              })
-            }
-          >
-            {t('lobby.dealRoles')}
-          </button>
-        </div>
-      )}
+        {isHost && (
+          <div className="desktop-split__full">
+            <button
+              type="button"
+              className="btn-primary max-w-md lg:max-w-sm"
+              onClick={() =>
+                getSocket().emit('game:start', {}, (res) => {
+                  if (!res?.ok) {
+                    setToast({
+                      level: 'error',
+                      message: res?.error ?? t('lobby.startFailed'),
+                    });
+                  }
+                })
+              }
+            >
+              {t('lobby.dealRoles')}
+            </button>
+          </div>
+        )}
+      </div>
 
       {!isHost && (
         <p className="text-center fluid-body text-stone-500">
