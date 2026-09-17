@@ -14,6 +14,10 @@ const LOOPBACK_HOSTS = new Set([
   '0.0.0.0',
 ]);
 
+/**
+ * Returns true when `host` is loopback / unusable for phone join URLs.
+ * @param host - Hostname or IP (brackets optional for IPv6 literals).
+ */
 export function isLoopbackHost(host: string): boolean {
   const h = host.trim().toLowerCase().replace(/^\[|\]$/g, '');
   if (LOOPBACK_HOSTS.has(h) || LOOPBACK_HOSTS.has(host.trim().toLowerCase())) {
@@ -23,6 +27,10 @@ export function isLoopbackHost(host: string): boolean {
   return false;
 }
 
+/**
+ * Returns true for RFC1918 + link-local IPv4 suitable for LAN advertise.
+ * @param ip - Dotted-quad IPv4 string.
+ */
 export function isPrivateLanIpv4(ip: string): boolean {
   const m = /^(\d+)\.(\d+)\.(\d+)\.(\d+)$/.exec(ip);
   if (!m) return false;

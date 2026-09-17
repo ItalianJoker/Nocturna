@@ -3,7 +3,7 @@
  */
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
-import { buildNightTurnQueue } from './nightScheduler.js';
+import { buildNightTurnQueue, injectTriggeredTurn, resolveBand, shouldWakeOnNight } from './nightScheduler.js';
 import { resolveNightActions, tallyFactionVotes } from './nightResolution.js';
 import { createDefaultRoleDeck } from './defaultRoles.js';
 import type { PendingAction, Player } from './types.js';
@@ -167,5 +167,93 @@ describe('tallyFactionVotes', () => {
       tallyFactionVotes({ a: 'x', b: 'x', c: 'y' }),
       'x',
     );
+  });
+
+  it('returns null on empty; ties keep first-seen target (stable)', () => {
+    assert.equal(tallyFactionVotes({}), null);
+    assert.equal(tallyFactionVotes({ a: 'x', b: 'y' }), 'x');
+  });
+});
+
+describe('shouldWakeOnNight / resolveBand / injectTriggeredTurn', () => {
+  it('honours ODD / EVEN / ON_TRIGGER frequencies', () => {
+    assert.equal(shouldWakeOnNight('ODD_NIGHTS', 1), true);
+    assert.equal(shouldWakeOnNight('ODD_NIGHTS', 2), false);
+    assert.equal(shouldWakeOnNight('EVEN_NIGHTS', 2), true);
+    assert.equal(shouldWakeOnNight('EVEN_NIGHTS', 1), false);
+    assert.equal(shouldWakeOnNight('ON_TRIGGER', 1), false);
+    assert.equal(shouldWakeOnNight('EVERY_NIGHT', 3), true);
+  });
+
+  it('resolveBand prefers explicit band then role flags', () => {
+    const deck = createDefaultRoleDeck();
+    const guardia = deck.find((r) => r.id === 'guardia')!;
+    const ombra = deck.find((r) => r.id === 'ombra')!;
+    const oracolo = deck.find((r) => r.id === 'oracolo')!;
+    assert.equal(resolveBand(guardia, guardia.wakeSchedule), 'PROTECTION');
+    assert.equal(resolveBand(ombra, ombra.wakeSchedule), 'ATTACK');
+    assert.equal(resolveBand(oracolo, oracolo.wakeSchedule), 'INVESTIGATION');
+  });
+
+  it('injectTriggeredTurn inserts ON_TRIGGER by priority', () => {
+    const deck = createDefaultRoleDeck();
+    const players = [
+      makePlayer({ id: '1', displayName: 'A', roleId: 'guardia' }),
+      makePlayer({ id: '2', displayName: 'B', roleId: 'ombra' }),
+      makePlayer({ id: '3', displayName: 'T', roleId: 'triggered' }),
+    ];
+    const triggerRole = {
+      id: 'triggered',
+      name: 'Triggered',
+      faction: 'NEUTRAL' as const,
+      description: 'Injected',
+      colorHex: '#fff',
+      iconName: 'Zap',
+      winCondition: 'CUSTOM_SURVIVE' as const,
+      count: 1,
+      wakeSchedule: {
+        frequency: 'ON_TRIGGER' as const,
+        priority: 5,
+        actionType: 'PASSIVE_INFO' as const,
+        timeMaskingDuration: 5_000,
+        passiveInfoText: 'Ping',
+      },
+    };
+    const base = buildNightTurnQueue(deck, players, 1);
+    assert.ok(!base.some((t) => t.roleId === 'triggered'));
+    const next = injectTriggeredTurn(
+      base,
+      triggerRole,
+      [players[2]!],
+      1,
+    );
+    assert.ok(next.some((t) => t.roleId === 'triggered'));
+    assert.ok(next[0]!.priority <= next[1]!.priority);
+  });
+});
+
+describe('resolveNightActions DELAYED band', () => {
+  it('DELAYED does not kill the target', () => {
+    const players = [
+      makePlayer({ id: 'v', displayName: 'V', roleId: 'cittadino' }),
+      makePlayer({ id: 'c', displayName: 'Curse', roleId: 'cittadino' }),
+    ];
+    const actions: PendingAction[] = [
+      {
+        id: 'a1',
+        nightNumber: 1,
+        actorPlayerId: 'c',
+        actorRoleId: 'cittadino',
+        actionType: 'SINGLE_TARGET',
+        resolutionBand: 'DELAYED',
+        priority: 50,
+        targetPlayerId: 'v',
+        submittedAt: 1,
+        isNullAction: false,
+      },
+    ];
+    const result = resolveNightActions(actions, players);
+    assert.deepEqual(result.eliminatedPlayerIds, []);
+    assert.equal(result.players.find((p) => p.id === 'v')?.isAlive, true);
   });
 });

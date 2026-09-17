@@ -9,7 +9,6 @@ import { create } from 'zustand';
 import type {
   MasterGameState,
   RoleDefinition,
-  SanitizedGameState,
   SyncStatePayload,
 } from '@nocturna/shared';
 import { isMasterGameState } from '@nocturna/shared';
@@ -90,15 +89,4 @@ export function selectIsMasterView(
   view: SyncStatePayload | null,
 ): view is MasterGameState {
   return !!view && isMasterGameState(view);
-}
-
-export function selectSanitized(
-  view: SyncStatePayload | null,
-): SanitizedGameState | null {
-  if (!view) return null;
-  if (isMasterGameState(view)) {
-    // Master dashboard still needs public fields; cast via structural overlap.
-    return view as unknown as SanitizedGameState;
-  }
-  return view;
 }
