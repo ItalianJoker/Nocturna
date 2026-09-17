@@ -83,7 +83,7 @@ export function NightScreen({ view }: NightScreenProps) {
               {(night!.currentTurn!.actionType === 'SINGLE_TARGET' ||
                 night!.currentTurn!.actionType === 'INSPECT_TARGET' ||
                 night!.currentTurn!.actionType === 'FACTION_VOTE') && (
-                <ul className="mt-6 flex max-h-[50dvh] flex-col gap-2 overflow-y-auto overscroll-contain">
+                <ul className="list-pane mt-6 flex flex-col gap-2">
                   {night!.currentTurn!.eligibleTargets.map((tgt) => {
                     const tally =
                       night!.currentTurn!.factionVoteTally[tgt.id] ?? 0;
