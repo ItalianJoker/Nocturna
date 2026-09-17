@@ -6,8 +6,10 @@
  * recovery so smartphone lock-screen / Wi-Fi↔4G blips can resume within
  * two minutes without forcing a full lobby rejoin.
  *
- * Path resolution supports Docker (`/app/...`), monorepo dev, and the
- * portable Electron host embed layout via `CLIENT_DIST` / `NOCTURNA_ROOT`.
+ * Listen host defaults to `0.0.0.0`. Join/QR advertisement never uses
+ * loopback — see `/api/host-info` and `@nocturna/shared` lanAdvertise helpers.
+ *
+ * Port is configurable via `PORT` env, `--port` CLI, or Host app settings.
  */
 
 import path from 'node:path';
@@ -18,11 +20,13 @@ import Fastify from 'fastify';
 import cors from '@fastify/cors';
 import fastifyStatic from '@fastify/static';
 import { Server } from 'socket.io';
-import type {
-  ClientToServerEvents,
-  InterServerEvents,
-  ServerToClientEvents,
-  SocketData,
+import {
+  buildAdvertiseInfo,
+  DEFAULT_SERVER_PORT,
+  type ClientToServerEvents,
+  type InterServerEvents,
+  type ServerToClientEvents,
+  type SocketData,
 } from '@nocturna/shared';
 import { registerSocketHandlers } from './socketHandlers.js';
 
@@ -34,13 +38,18 @@ export interface StartServerOptions {
   clientDist?: string;
   corsOrigin?: boolean | string | string[];
   logger?: boolean;
+  /** Hostname, IP, or full `http://host:port` for QR/join advertisement. */
+  advertiseHost?: string | null;
 }
 
 export interface StartedServer {
   port: number;
   host: string;
-  url: string;
+  /** Loopback admin URL for Host machine health checks only — never for QR. */
+  localAdminUrl: string;
   lanUrls: string[];
+  advertiseBase: string | null;
+  advertiseError?: string;
   close: () => Promise<void>;
 }
 
@@ -50,13 +59,52 @@ function resolveClientDist(explicit?: string): string {
   if (process.env.NOCTURNA_ROOT) {
     return path.resolve(process.env.NOCTURNA_ROOT, 'client');
   }
-  // Monorepo: server/dist → ../../client/dist
   const monorepo = path.resolve(__dirname, '../../client/dist');
   if (fs.existsSync(monorepo)) return monorepo;
-  // Portable embed: <resources>/embed/server → ../client
   const embed = path.resolve(__dirname, '../client');
   if (fs.existsSync(embed)) return embed;
   return monorepo;
+}
+
+function collectLanIps(): string[] {
+  const ips: string[] = [];
+  const nets = os.networkInterfaces();
+  for (const entries of Object.values(nets)) {
+    if (!entries) continue;
+    for (const net of entries) {
+      if (net.family === 'IPv4' && !net.internal) {
+        ips.push(net.address);
+      }
+    }
+  }
+  return ips;
+}
+
+export function parseCliArgs(argv: string[] = process.argv.slice(2)): {
+  port?: number;
+  host?: string;
+  advertiseHost?: string;
+} {
+  const out: { port?: number; host?: string; advertiseHost?: string } = {};
+  for (let i = 0; i < argv.length; i++) {
+    const a = argv[i]!;
+    const next = argv[i + 1];
+    if ((a === '--port' || a === '-p') && next) {
+      out.port = Number(next);
+      i++;
+    } else if (a.startsWith('--port=')) {
+      out.port = Number(a.slice('--port='.length));
+    } else if (a === '--host' && next) {
+      out.host = next;
+      i++;
+    } else if (a === '--advertise-host' && next) {
+      out.advertiseHost = next;
+      i++;
+    } else if (a.startsWith('--advertise-host=')) {
+      out.advertiseHost = a.slice('--advertise-host='.length);
+    }
+  }
+  return out;
 }
 
 /**
@@ -66,8 +114,23 @@ function resolveClientDist(explicit?: string): string {
 export async function startServer(
   options: StartServerOptions = {},
 ): Promise<StartedServer> {
-  const PORT = options.port ?? Number(process.env.PORT ?? 3001);
-  const HOST = options.host ?? process.env.HOST ?? '0.0.0.0';
+  const cli = parseCliArgs();
+  const PORT =
+    options.port ??
+    cli.port ??
+    Number(process.env.PORT ?? DEFAULT_SERVER_PORT);
+  const HOST = options.host ?? cli.host ?? process.env.HOST ?? '0.0.0.0';
+  const advertiseOverride =
+    options.advertiseHost ??
+    cli.advertiseHost ??
+    process.env.ADVERTISE_BASE ??
+    process.env.ADVERTISE_HOST ??
+    null;
+
+  if (!Number.isFinite(PORT) || PORT < 1 || PORT > 65535) {
+    throw new Error(`Invalid PORT: ${PORT}`);
+  }
+
   const CLIENT_ORIGIN =
     options.corsOrigin ??
     (process.env.CLIENT_ORIGIN === 'false'
@@ -82,17 +145,31 @@ export async function startServer(
     origin: CLIENT_ORIGIN,
   });
 
+  const lanIps = collectLanIps();
+  const advertise = buildAdvertiseInfo(PORT, lanIps, advertiseOverride);
+
   app.get('/api/health', async () => ({
     ok: true,
     name: 'Nocturna',
     tagline: 'Chi dorme non sopravvive',
     now: Date.now(),
+    port: PORT,
   }));
 
+  /**
+   * Player-facing Host discovery. Clients MUST build QR/join links from
+   * `advertiseBase` — never from window.location when it is loopback.
+   */
   app.get('/api/host-info', async () => ({
     ok: true,
     port: PORT,
-    lanUrls: collectLanUrls(PORT),
+    listenHost: HOST,
+    lanIps: advertise.lanIps,
+    preferredIp: advertise.preferredIp,
+    lanUrls: advertise.lanIps.map((ip) => `http://${ip}:${PORT}`),
+    advertiseBase: advertise.advertiseBase,
+    usedOverride: advertise.usedOverride,
+    error: advertise.error ?? null,
   }));
 
   const clientDist = resolveClientDist(options.clientDist);
@@ -123,11 +200,6 @@ export async function startServer(
       origin: CLIENT_ORIGIN,
       methods: ['GET', 'POST'],
     },
-    /**
-     * Tolerates temporary smartphone lock-screens and network handovers.
-     * After `maxDisconnectionDuration` the recovery buffer is dropped and
-     * the client must rebind via `session:rebind` + sessionToken.
-     */
     connectionStateRecovery: {
       maxDisconnectionDuration: 2 * 60 * 1000,
       skipMiddlewares: true,
@@ -136,22 +208,28 @@ export async function startServer(
 
   registerSocketHandlers(io);
 
-  const lanUrls = collectLanUrls(PORT);
   app.log.info(
     `Nocturna listening on http://${HOST}:${PORT}` +
       (servingSpa
         ? ` (SPA from ${clientDist})`
         : ' (API only — run Vite for UI)'),
   );
-  if (lanUrls.length) {
-    app.log.info(`LAN: ${lanUrls.join(', ')}`);
+  if (advertise.advertiseBase) {
+    app.log.info(`Advertise (QR/join): ${advertise.advertiseBase}`);
+  } else {
+    app.log.warn(
+      advertise.error ??
+        'No LAN advertise URL — QR join will fail until a NIC or ADVERTISE_HOST is available.',
+    );
   }
 
   return {
     port: PORT,
     host: HOST,
-    url: `http://127.0.0.1:${PORT}`,
-    lanUrls,
+    localAdminUrl: `http://127.0.0.1:${PORT}`,
+    lanUrls: advertise.lanIps.map((ip) => `http://${ip}:${PORT}`),
+    advertiseBase: advertise.advertiseBase,
+    advertiseError: advertise.error,
     close: async () => {
       io.close();
       await app.close();
@@ -159,23 +237,10 @@ export async function startServer(
   };
 }
 
-function collectLanUrls(port: number): string[] {
-  const urls: string[] = [];
-  const nets = os.networkInterfaces();
-  for (const entries of Object.values(nets)) {
-    if (!entries) continue;
-    for (const net of entries) {
-      if (net.family === 'IPv4' && !net.internal) {
-        urls.push(`http://${net.address}:${port}`);
-      }
-    }
-  }
-  return urls;
-}
-
 const isDirectRun =
   process.argv[1] &&
-  path.resolve(process.argv[1]) === path.resolve(fileURLToPath(import.meta.url));
+  path.resolve(process.argv[1]) ===
+    path.resolve(fileURLToPath(import.meta.url));
 
 if (isDirectRun) {
   startServer().catch((err) => {

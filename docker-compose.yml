@@ -1,6 +1,6 @@
 # Nocturna — LAN party host via Docker
 # Usage: docker compose up --build
-# Then open http://localhost:3001 (or http://<host-lan-ip>:3001 from phones)
+# Phones join via LAN IP — never localhost in QR (see /api/host-info).
 
 services:
   nocturna:
@@ -10,11 +10,11 @@ services:
     image: nocturna:local
     container_name: nocturna
     ports:
-      - "${NOCTURNA_PORT:-3001}:3001"
+      - "${NOCTURNA_PORT:-3001}:${NOCTURNA_PORT:-3001}"
     environment:
       HOST: "0.0.0.0"
-      PORT: "3001"
+      PORT: "${NOCTURNA_PORT:-3001}"
+      # Optional: force advertised join host (LAN IP or public hostname). Never localhost.
+      # ADVERTISE_HOST: "192.168.1.20"
       NODE_ENV: production
     restart: unless-stopped
-    # Host network alternative (Linux only) for easiest LAN discovery:
-    # network_mode: host

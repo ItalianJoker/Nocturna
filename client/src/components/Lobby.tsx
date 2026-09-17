@@ -1,19 +1,14 @@
 /**
- * @fileoverview Lobby + QR join portal — extreme mobile-first responsiveness.
+ * @fileoverview Lobby + QR join portal — LAN-only advertise, i18n, Host settings.
  *
- * Join-via-QR must work on constrained phone browsers: safe-area padding,
- * ≥44px targets, fluid type, no horizontal overflow, fast first paint.
+ * QR / join links NEVER use localhost or loopback. The advertise base comes
+ * from `/api/host-info` (LAN IP + configured port, or Host override).
  */
 
 import { useEffect, useMemo, useState } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
-import {
-  Copy,
-  Download,
-  Upload,
-  Wifi,
-  WifiOff,
-} from 'lucide-react';
+import { Copy, Download, Upload, Wifi, WifiOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import {
   createDefaultRoleDeck,
   DEFAULT_ROOM_SETTINGS,
@@ -23,7 +18,12 @@ import {
 } from '@nocturna/shared';
 import { getSocket } from '../lib/socket';
 import { RoleScheduleEditor } from './RoleScheduleEditor';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAppStore } from '../store/appStore';
+import {
+  buildJoinUrl,
+  useJoinAdvertise,
+} from '../hooks/useJoinAdvertise';
 
 const PRESET_KEY = 'nocturna.presets.v1';
 
@@ -39,6 +39,7 @@ export function HomeGate() {
 }
 
 function Welcome({ connected }: { connected: boolean }) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'join' | 'create'>('join');
   const [name, setName] = useState('');
   const [pin, setPin] = useState(
@@ -59,7 +60,7 @@ function Welcome({ connected }: { connected: boolean }) {
         if (!res?.ok || !res.roomId || !res.playerId || !res.sessionToken) {
           setToast({
             level: 'error',
-            message: res?.error ?? 'Creazione fallita',
+            message: res?.error ?? t('welcome.createFailed'),
           });
           return;
         }
@@ -84,7 +85,7 @@ function Welcome({ connected }: { connected: boolean }) {
         if (!res?.ok || !res.roomId || !res.playerId || !res.sessionToken) {
           setToast({
             level: 'error',
-            message: res?.error ?? 'Ingresso fallito',
+            message: res?.error ?? t('welcome.joinFailed'),
           });
           return;
         }
@@ -109,30 +110,31 @@ function Welcome({ connected }: { connected: boolean }) {
             'radial-gradient(ellipse 90% 60% at 50% 0%, #3f1525 0%, transparent 55%), linear-gradient(180deg, #0c0a0e 0%, #000 100%)',
         }}
       />
+      <div className="flex justify-end">
+        <LanguageSwitcher />
+      </div>
       <div className="animate-rise">
         <p className="fluid-label text-[var(--nocturna-crimson-hot)]">
-          Chi dorme non sopravvive
+          {t('app.tagline')}
         </p>
         <h1 className="font-display fluid-hero mt-3 text-[var(--nocturna-paper)]">
-          Nocturna
+          {t('app.name')}
         </h1>
         <p className="mt-4 max-w-prose fluid-body text-stone-400">
-          Deduzione sociale mobile-first. Notte stealth, narratore automatico o
-          Master assistito — senza segnali che tradiscono chi è sveglio.
+          {t('welcome.blurb')}
         </p>
       </div>
 
       <div
         className="relative z-10 mt-8 flex gap-1 rounded-full border border-white/10 bg-black/40 p-1"
         role="tablist"
-        aria-label="Modalità accesso"
+        aria-label={t('welcome.tabJoin')}
       >
         <button
           type="button"
           role="tab"
           data-testid="tab-join"
           aria-selected={mode === 'join'}
-          aria-controls="access-panel"
           onClick={() => setMode('join')}
           className={`touch-target relative z-10 flex-1 cursor-pointer select-none rounded-full py-2.5 text-sm ${
             mode === 'join'
@@ -140,14 +142,13 @@ function Welcome({ connected }: { connected: boolean }) {
               : 'text-stone-400'
           }`}
         >
-          Entra
+          {t('welcome.tabJoin')}
         </button>
         <button
           type="button"
           role="tab"
           data-testid="tab-create"
           aria-selected={mode === 'create'}
-          aria-controls="access-panel"
           onClick={() => setMode('create')}
           className={`touch-target relative z-10 flex-1 cursor-pointer select-none rounded-full py-2.5 text-sm ${
             mode === 'create'
@@ -155,13 +156,13 @@ function Welcome({ connected }: { connected: boolean }) {
               : 'text-stone-400'
           }`}
         >
-          Crea stanza
+          {t('welcome.tabCreate')}
         </button>
       </div>
 
       <div id="access-panel" className="relative z-10">
         <label className="mt-6 block fluid-label text-stone-500">
-          Nome al tavolo
+          {t('welcome.displayName')}
           <input
             className="field-input mt-2 tracking-normal"
             style={{ letterSpacing: 'normal', textTransform: 'none' }}
@@ -170,13 +171,13 @@ function Welcome({ connected }: { connected: boolean }) {
             autoComplete="nickname"
             enterKeyHint="next"
             onChange={(e) => setName(e.target.value)}
-            placeholder="Es. Luca"
+            placeholder={t('welcome.displayNamePlaceholder')}
           />
         </label>
 
         {mode === 'join' && (
           <label className="mt-4 block fluid-label text-stone-500">
-            PIN stanza
+            {t('welcome.pin')}
             <input
               className="field-input mt-2 text-center font-mono text-2xl tracking-[0.35em]"
               value={pin}
@@ -201,21 +202,21 @@ function Welcome({ connected }: { connected: boolean }) {
           data-testid="access-submit"
         >
           {busy
-            ? 'Attendi…'
+            ? t('welcome.wait')
             : mode === 'join'
-              ? 'Entra in stanza'
-              : 'Apri lobby'}
+              ? t('welcome.enterRoom')
+              : t('welcome.openLobby')}
         </button>
       </div>
 
       <p className="mt-6 flex items-center justify-center gap-2 text-xs text-stone-600">
         {connected ? (
           <>
-            <Wifi className="h-3.5 w-3.5 text-emerald-600" /> Connesso
+            <Wifi className="h-3.5 w-3.5 text-emerald-600" /> {t('app.connected')}
           </>
         ) : (
           <>
-            <WifiOff className="h-3.5 w-3.5" /> Connessione…
+            <WifiOff className="h-3.5 w-3.5" /> {t('app.connecting')}
           </>
         )}
       </p>
@@ -223,13 +224,19 @@ function Welcome({ connected }: { connected: boolean }) {
   );
 }
 
+function msToSec(ms: number): number {
+  return Math.round(ms / 1000);
+}
+
 function LobbyRoom() {
+  const { t } = useTranslation();
   const view = useAppStore((s) => s.view)!;
   const session = useAppStore((s) => s.session)!;
   const draftDeck = useAppStore((s) => s.draftDeck);
   const setDraftDeck = useAppStore((s) => s.setDraftDeck);
   const clearGame = useAppStore((s) => s.clearGame);
   const setToast = useAppStore((s) => s.setToast);
+  const advertise = useJoinAdvertise();
 
   const me = view.players.find((p) => p.id === session.playerId);
   const isHost = !!me?.isHost;
@@ -246,10 +253,13 @@ function LobbyRoom() {
   }, [isHost, view.hostDeck, draftDeck, setDraftDeck]);
 
   const joinUrl = useMemo(() => {
-    const url = new URL(window.location.href);
-    url.searchParams.set('pin', view.roomId);
-    return url.toString();
-  }, [view.roomId]);
+    if (!advertise.base) return null;
+    try {
+      return buildJoinUrl(advertise.base, view.roomId);
+    } catch {
+      return null;
+    }
+  }, [advertise.base, view.roomId]);
 
   const patchSettings = (patch: Partial<RoomSettings>) => {
     getSocket().emit('lobby:updateSettings', { settings: patch });
@@ -276,7 +286,7 @@ function LobbyRoom() {
     a.href = URL.createObjectURL(blob);
     a.download = `nocturna-preset-${view.roomId}.json`;
     a.click();
-    setToast({ level: 'info', message: 'Preset esportato.' });
+    setToast({ level: 'info', message: t('lobby.presetExported') });
   };
 
   const importPresetFile = async (file: File) => {
@@ -285,46 +295,81 @@ function LobbyRoom() {
     getSocket().emit('lobby:importPreset', { preset }, (res) => {
       if (res?.ok) {
         setDraftDeck(preset.roles);
-        setToast({ level: 'info', message: 'Preset importato.' });
+        setToast({ level: 'info', message: t('lobby.presetImported') });
       } else {
-        setToast({ level: 'error', message: res?.error ?? 'Import fallito' });
+        setToast({
+          level: 'error',
+          message: res?.error ?? t('lobby.importFailed'),
+        });
       }
     });
   };
 
   return (
     <div className="page-shell gap-5">
-      <header className="shrink-0">
-        <p className="fluid-label text-stone-500">Lobby · PIN</p>
-        <h1 className="font-display fluid-hero tracking-wide text-[var(--nocturna-paper)]">
-          {view.roomId}
-        </h1>
-        <p className="mt-1 fluid-body text-stone-400 break-words">
-          {view.settings.roomName}
-        </p>
-      </header>
+      <div className="flex items-start justify-between gap-2">
+        <header className="min-w-0 shrink">
+          <p className="fluid-label text-stone-500">{t('lobby.title')}</p>
+          <h1 className="font-display fluid-hero tracking-wide text-[var(--nocturna-paper)]">
+            {view.roomId}
+          </h1>
+          <p className="mt-1 fluid-body text-stone-400 break-words">
+            {view.settings.roomName}
+          </p>
+        </header>
+        <LanguageSwitcher />
+      </div>
 
       <div className="qr-block rounded-2xl border border-white/10 bg-black/40 p-3 sm:p-4">
-        <div className="qr-block__code">
-          <QRCodeSVG value={joinUrl} size={112} level="M" marginSize={0} />
-        </div>
+        {joinUrl ? (
+          <div className="qr-block__code">
+            <QRCodeSVG value={joinUrl} size={112} level="M" marginSize={0} />
+          </div>
+        ) : (
+          <div className="flex min-h-[112px] min-w-[112px] items-center justify-center rounded-xl border border-rose-900/50 bg-rose-950/40 p-2 text-center text-xs text-rose-200">
+            {t('lobby.qrUnavailable')}
+          </div>
+        )}
         <div className="min-w-0 flex-1 fluid-body text-stone-400">
-          <p>Scansiona per entrare da qualsiasi telefono.</p>
-          <button
-            type="button"
-            className="touch-target mt-2 inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
-            onClick={() => {
-              void navigator.clipboard.writeText(view.roomId);
-              setToast({ level: 'info', message: 'PIN copiato.' });
-            }}
-          >
-            <Copy className="h-3.5 w-3.5" /> Copia PIN
-          </button>
+          <p>{t('lobby.scanQr')}</p>
+          {joinUrl ? (
+            <p className="mt-2 break-all font-mono text-xs text-stone-500">
+              {joinUrl}
+            </p>
+          ) : (
+            <p className="mt-2 text-sm text-rose-300">
+              {advertise.error ?? t('lobby.lanError')}
+            </p>
+          )}
+          <div className="mt-2 flex flex-wrap gap-3">
+            <button
+              type="button"
+              className="touch-target inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
+              onClick={() => {
+                void navigator.clipboard.writeText(view.roomId);
+                setToast({ level: 'info', message: t('lobby.pinCopied') });
+              }}
+            >
+              <Copy className="h-3.5 w-3.5" /> {t('lobby.copyPin')}
+            </button>
+            {joinUrl && (
+              <button
+                type="button"
+                className="touch-target inline-flex items-center gap-1 text-[var(--nocturna-amber)]"
+                onClick={() => {
+                  void navigator.clipboard.writeText(joinUrl);
+                  setToast({ level: 'info', message: t('lobby.linkCopied') });
+                }}
+              >
+                <Copy className="h-3.5 w-3.5" /> {t('lobby.copyLink')}
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
       <section className="shrink-0">
-        <h2 className="font-display fluid-h2">Al tavolo</h2>
+        <h2 className="font-display fluid-h2">{t('lobby.atTable')}</h2>
         <ul className="mt-2 max-h-[30dvh] space-y-1 overflow-y-auto overscroll-contain">
           {view.players.map((p) => (
             <li
@@ -333,8 +378,8 @@ function LobbyRoom() {
             >
               <span className="truncate">
                 {p.displayName}
-                {p.isHost ? ' · Host' : ''}
-                {p.isMaster ? ' · Master' : ''}
+                {p.isHost ? ` · ${t('lobby.host')}` : ''}
+                {p.isMaster ? ` · ${t('lobby.master')}` : ''}
               </span>
               <span
                 className={`h-2 w-2 shrink-0 rounded-full ${
@@ -349,9 +394,17 @@ function LobbyRoom() {
       {isHost && (
         <div className="scroll-stack gap-5">
           <section className="space-y-3 rounded-2xl border border-white/10 bg-[var(--nocturna-panel)]/80 p-3 sm:p-4">
-            <h2 className="font-display fluid-h2">Impostazioni Host</h2>
+            <h2 className="font-display fluid-h2">{t('lobby.hostSettings')}</h2>
             <label className="flex flex-col gap-1 text-xs text-stone-400">
-              Modalità
+              {t('lobby.roomName')}
+              <input
+                className="field-input"
+                value={view.settings.roomName}
+                onChange={(e) => patchSettings({ roomName: e.target.value })}
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-xs text-stone-400">
+              {t('lobby.mode')}
               <select
                 className="field-input"
                 value={view.settings.moderatorMode}
@@ -362,13 +415,13 @@ function LobbyRoom() {
                   })
                 }
               >
-                <option value="AUTOMATED">Narratore automatico</option>
-                <option value="ASSISTED">Master assistito</option>
+                <option value="AUTOMATED">{t('lobby.modeAutomated')}</option>
+                <option value="ASSISTED">{t('lobby.modeAssisted')}</option>
               </select>
             </label>
             {view.settings.moderatorMode === 'ASSISTED' && (
               <label className="flex flex-col gap-1 text-xs text-stone-400">
-                Master
+                {t('lobby.masterLabel')}
                 <select
                   className="field-input"
                   value={
@@ -389,7 +442,7 @@ function LobbyRoom() {
               </label>
             )}
             <label className="flex flex-col gap-1 text-xs text-stone-400">
-              Aptica
+              {t('lobby.haptics')}
               <select
                 className="field-input"
                 value={view.settings.hapticPolicy}
@@ -400,14 +453,14 @@ function LobbyRoom() {
                   })
                 }
               >
-                <option value="NONE">Nessuna vibrazione (default)</option>
+                <option value="NONE">{t('lobby.hapticsNone')}</option>
                 <option value="UNIVERSAL_HEARTBEAT">
-                  Heartbeat universale
+                  {t('lobby.hapticsHeartbeat')}
                 </option>
               </select>
             </label>
             <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
-              <span>Audio ambiente (AUTOMATED)</span>
+              <span>{t('lobby.ambientAudio')}</span>
               <input
                 type="checkbox"
                 className="h-5 w-5 shrink-0"
@@ -417,8 +470,19 @@ function LobbyRoom() {
                 }
               />
             </label>
+            <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
+              <span>{t('lobby.allowLateJoin')}</span>
+              <input
+                type="checkbox"
+                className="h-5 w-5 shrink-0"
+                checked={view.settings.allowLateJoin}
+                onChange={(e) =>
+                  patchSettings({ allowLateJoin: e.target.checked })
+                }
+              />
+            </label>
             <label className="flex flex-col gap-1 text-xs text-stone-400">
-              Visibilità voti
+              {t('lobby.voteVisibility')}
               <select
                 className="field-input"
                 value={view.settings.voteVisibility}
@@ -429,12 +493,12 @@ function LobbyRoom() {
                   })
                 }
               >
-                <option value="SECRET">Segreta</option>
-                <option value="PUBLIC">Palese</option>
+                <option value="SECRET">{t('lobby.voteSecret')}</option>
+                <option value="PUBLIC">{t('lobby.votePublic')}</option>
               </select>
             </label>
             <label className="flex flex-col gap-1 text-xs text-stone-400">
-              Pareggi tribunale
+              {t('lobby.tieBreak')}
               <select
                 className="field-input"
                 value={view.settings.tieBreakPolicy}
@@ -445,20 +509,69 @@ function LobbyRoom() {
                   })
                 }
               >
-                <option value="NO_ELIMINATION">Nessun rogo</option>
-                <option value="RUNOFF">Ballottaggio</option>
+                <option value="NO_ELIMINATION">{t('lobby.tieNoBurn')}</option>
+                <option value="RUNOFF">{t('lobby.tieRunoff')}</option>
               </select>
             </label>
+            <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2">
+              {(
+                [
+                  ['discussionDurationMs', 'lobby.discussionSec'],
+                  ['tribunalDurationMs', 'lobby.tribunalSec'],
+                  ['defaultNightTurnDurationMs', 'lobby.nightTurnSec'],
+                  ['dawnDurationMs', 'lobby.dawnSec'],
+                  ['ballotRevealDurationMs', 'lobby.ballotSec'],
+                ] as const
+              ).map(([key, labelKey]) => (
+                <label
+                  key={key}
+                  className="flex flex-col gap-1 text-xs text-stone-400"
+                >
+                  {t(labelKey)}
+                  <input
+                    type="number"
+                    min={5}
+                    max={3600}
+                    className="field-input"
+                    value={msToSec(view.settings[key] ?? DEFAULT_ROOM_SETTINGS[key])}
+                    onChange={(e) =>
+                      patchSettings({
+                        [key]: Math.max(5, Number(e.target.value) || 5) * 1000,
+                      })
+                    }
+                  />
+                </label>
+              ))}
+              <label className="flex flex-col gap-1 text-xs text-stone-400">
+                {t('lobby.assistedMult')}
+                <input
+                  type="number"
+                  min={1}
+                  max={10}
+                  step={0.5}
+                  className="field-input"
+                  value={view.settings.assistedTimerMultiplier ?? 2}
+                  onChange={(e) =>
+                    patchSettings({
+                      assistedTimerMultiplier: Math.max(
+                        1,
+                        Number(e.target.value) || 2,
+                      ),
+                    })
+                  }
+                />
+              </label>
+            </div>
             <div className="flex flex-col gap-2 pt-1 sm:flex-row">
               <button
                 type="button"
                 onClick={exportPreset}
                 className="btn-ghost w-full flex-1"
               >
-                <Download className="h-4 w-4" /> Esporta
+                <Download className="h-4 w-4" /> {t('lobby.export')}
               </button>
               <label className="btn-ghost w-full flex-1 cursor-pointer">
-                <Upload className="h-4 w-4" /> Importa
+                <Upload className="h-4 w-4" /> {t('lobby.import')}
                 <input
                   type="file"
                   accept="application/json"
@@ -484,20 +597,20 @@ function LobbyRoom() {
                 if (!res?.ok) {
                   setToast({
                     level: 'error',
-                    message: res?.error ?? 'Avvio fallito',
+                    message: res?.error ?? t('lobby.startFailed'),
                   });
                 }
               })
             }
           >
-            Distribuisci ruoli
+            {t('lobby.dealRoles')}
           </button>
         </div>
       )}
 
       {!isHost && (
         <p className="text-center fluid-body text-stone-500">
-          In attesa che l&apos;Host configuri e avvii la partita…
+          {t('lobby.waitingHost')}
         </p>
       )}
 
@@ -509,7 +622,7 @@ function LobbyRoom() {
           clearGame();
         }}
       >
-        Esci dalla stanza
+        {t('lobby.leave')}
       </button>
     </div>
   );

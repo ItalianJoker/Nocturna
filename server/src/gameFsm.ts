@@ -165,10 +165,9 @@ function startCurrentNightTurn(room: GameState): void {
       advanceNightTurn(current, { reason: 'timer' });
     });
   } else {
-    // ASSISTED: still expose a suggested end time but do not auto-advance
-    // unless the Master leaves the turn unattended past 2× duration.
-    room.phaseEndsAt = Date.now() + duration * 2;
-    setRoomTimer(room.roomId, duration * 2, () => {
+    const mult = Math.max(1, room.settings.assistedTimerMultiplier || 2);
+    room.phaseEndsAt = Date.now() + duration * mult;
+    setRoomTimer(room.roomId, duration * mult, () => {
       const current = getRoom(room.roomId);
       if (!current || current.phase !== 'NIGHT' || current.isPaused) return;
       advanceNightTurn(current, { reason: 'timer' });
@@ -426,7 +425,8 @@ function finishNight(room: GameState): void {
 
   room.phase = 'DAWN';
   room.dayNumber = room.nightNumber;
-  room.phaseEndsAt = Date.now() + 8_000;
+  const dawnMs = Math.max(1_000, room.settings.dawnDurationMs || 8_000);
+  room.phaseEndsAt = Date.now() + dawnMs;
   room.nightQueue = [];
   room.currentTurnIndex = 0;
 
@@ -439,7 +439,7 @@ function finishNight(room: GameState): void {
     return;
   }
 
-  setRoomTimer(room.roomId, 8_000, () => {
+  setRoomTimer(room.roomId, dawnMs, () => {
     const current = getRoom(room.roomId);
     if (!current || current.phase !== 'DAWN') return;
     enterDiscussion(current);
@@ -472,8 +472,8 @@ export function enterDiscussion(room: GameState): void {
       enterTribunal(current);
     });
   } else {
-    // ASSISTED: soft reminder timer at 2×; Master can open tribunal earlier.
-    setRoomTimer(room.roomId, duration * 2, () => {
+    const mult = Math.max(1, room.settings.assistedTimerMultiplier || 2);
+    setRoomTimer(room.roomId, duration * mult, () => {
       const current = getRoom(room.roomId);
       if (!current || current.phase !== 'DISCUSSION' || current.isPaused) return;
       enterTribunal(current);
@@ -549,7 +549,8 @@ function resolveTribunal(room: GameState): void {
   }
 
   room.phase = 'BALLOT';
-  room.phaseEndsAt = Date.now() + 5_000;
+  const ballotMs = Math.max(1_000, room.settings.ballotRevealDurationMs || 5_000);
+  room.phaseEndsAt = Date.now() + ballotMs;
   broadcastAll(room.roomId);
 
   const finish = () => {
@@ -595,7 +596,7 @@ function resolveTribunal(room: GameState): void {
     enterNight(current);
   };
 
-  setRoomTimer(room.roomId, 5_000, finish);
+  setRoomTimer(room.roomId, ballotMs, finish);
 }
 
 export function masterForceAdvance(

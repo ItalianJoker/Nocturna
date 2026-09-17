@@ -10,6 +10,7 @@ import {
   ArrowUp,
   Moon,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type {
   RoleDefinition,
   WakeFrequency,
@@ -43,6 +44,7 @@ export function RoleScheduleEditor({
   onChange,
   disabled,
 }: RoleScheduleEditorProps) {
+  const { t } = useTranslation();
   const sorted = [...deck].sort(
     (a, b) => a.wakeSchedule.priority - b.wakeSchedule.priority,
   );
@@ -92,12 +94,11 @@ export function RoleScheduleEditor({
       <header className="mb-3 flex items-center gap-2">
         <Moon className="h-4 w-4 shrink-0 text-[var(--nocturna-amber)]" />
         <h2 className="font-display fluid-h2 text-[var(--nocturna-paper)]">
-          Ordine di chiamata
+          {t('roles.editorTitle')}
         </h2>
       </header>
       <p className="mb-4 fluid-body text-[var(--nocturna-mist)]">
-        Priorità bassa = chiamato prima. Frequenza e tipo azione restano
-        data-driven — nessun ruolo è cablato nel motore.
+        {t('roles.editorHelp')}
       </p>
       <ul className="flex flex-col gap-3">
         {sorted.map((role) => (
@@ -114,7 +115,8 @@ export function RoleScheduleEditor({
                   {role.name}
                 </p>
                 <p className="text-xs text-stone-500">
-                  {role.faction} · prio {role.wakeSchedule.priority}
+                  {t(`factions.${role.faction}`, { defaultValue: role.faction })} ·{' '}
+                  {role.wakeSchedule.priority}
                 </p>
               </div>
               <div className="flex shrink-0 gap-1">
@@ -123,7 +125,7 @@ export function RoleScheduleEditor({
                   disabled={disabled}
                   className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
                   onClick={() => move(role.id, -1)}
-                  aria-label="Alza priorità"
+                  aria-label={t('roles.raisePriority')}
                 >
                   <ArrowUp className="h-4 w-4" />
                 </button>
@@ -132,7 +134,7 @@ export function RoleScheduleEditor({
                   disabled={disabled}
                   className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
                   onClick={() => move(role.id, 1)}
-                  aria-label="Abbassa priorità"
+                  aria-label={t('roles.lowerPriority')}
                 >
                   <ArrowDown className="h-4 w-4" />
                 </button>
@@ -140,7 +142,7 @@ export function RoleScheduleEditor({
             </div>
             <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[380px]:grid-cols-2">
               <label className="flex flex-col gap-1 text-stone-400">
-                Frequenza
+                {t('roles.frequency')}
                 <select
                   disabled={disabled}
                   className="field-input"
@@ -159,7 +161,7 @@ export function RoleScheduleEditor({
                 </select>
               </label>
               <label className="flex flex-col gap-1 text-stone-400">
-                Azione
+                {t('roles.action')}
                 <select
                   disabled={disabled}
                   className="field-input"
@@ -178,7 +180,7 @@ export function RoleScheduleEditor({
                 </select>
               </label>
               <label className="flex flex-col gap-1 text-stone-400">
-                Copie
+                {t('roles.copies')}
                 <input
                   type="number"
                   min={0}
@@ -192,7 +194,7 @@ export function RoleScheduleEditor({
                 />
               </label>
               <label className="flex flex-col gap-1 text-stone-400">
-                Masking (ms)
+                {t('roles.maskingMs')}
                 <input
                   type="number"
                   min={0}
