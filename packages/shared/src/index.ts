@@ -12,3 +12,4 @@ export * from './defaultRoles.js';
 export * from './winConditions.js';
 export * from './sanitize.js';
 export * from './socketEvents.js';
+export * from './lanAdvertise.js';

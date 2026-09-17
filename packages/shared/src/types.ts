@@ -218,6 +218,15 @@ export interface RoomSettings {
    * Also used as the lower bound in AUTOMATED masking.
    */
   defaultNightTurnDurationMs: number;
+  /** Dawn announcement dwell before discussion (ms). */
+  dawnDurationMs: number;
+  /** Brief ballot-reveal pause after tribunal tallies (ms). */
+  ballotRevealDurationMs: number;
+  /**
+   * In ASSISTED mode, soft timers use `duration * assistedTimerMultiplier`
+   * before auto-advance (Master can still force earlier).
+   */
+  assistedTimerMultiplier: number;
   /** Allow spectators to join after ROLE_REVEAL (receive sanitised view only). */
   allowLateJoin: boolean;
 }
@@ -386,17 +395,8 @@ export interface SanitizedNightView {
 export interface SanitizedGameState {
   roomId: RoomId;
   phase: GamePhase;
-  settings: Pick<
-    RoomSettings,
-    | 'roomName'
-    | 'moderatorMode'
-    | 'hapticPolicy'
-    | 'ambientAudioEnabled'
-    | 'discussionDurationMs'
-    | 'tribunalDurationMs'
-    | 'voteVisibility'
-    | 'tieBreakPolicy'
-  >;
+  /** Full Host-configurable settings mirror (safe public fields only). */
+  settings: RoomSettings;
   /** Absolute server timestamp; clients only render countdown from this. */
   phaseEndsAt: number | null;
   nightNumber: number;
@@ -554,5 +554,11 @@ export const DEFAULT_ROOM_SETTINGS: RoomSettings = {
   tieBreakPolicy: 'NO_ELIMINATION',
   voteVisibility: 'SECRET',
   defaultNightTurnDurationMs: 20_000,
+  dawnDurationMs: 8_000,
+  ballotRevealDurationMs: 5_000,
+  assistedTimerMultiplier: 2,
   allowLateJoin: false,
 };
+
+/** Default HTTP listen port for the Nocturna Host server. */
+export const DEFAULT_SERVER_PORT = 3001;

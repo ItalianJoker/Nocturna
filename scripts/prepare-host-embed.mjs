@@ -95,10 +95,18 @@ const started = await startServer({
   port: Number(process.env.PORT),
   host: process.env.HOST,
   clientDist: process.env.CLIENT_DIST,
+  advertiseHost: process.env.ADVERTISE_HOST || process.env.ADVERTISE_BASE || null,
   logger: true,
 });
 
-console.log(JSON.stringify({ ready: true, url: started.url, lanUrls: started.lanUrls, port: started.port }));
+console.log(JSON.stringify({
+  ready: true,
+  localAdminUrl: started.localAdminUrl,
+  advertiseBase: started.advertiseBase,
+  lanUrls: started.lanUrls,
+  port: started.port,
+  advertiseError: started.advertiseError ?? null,
+}));
 `,
 );
 

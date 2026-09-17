@@ -3,6 +3,7 @@
  */
 
 import type { ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { SanitizedGameState } from '@nocturna/shared';
 import { getSocket } from '../lib/socket';
 import { formatMs, useServerCountdown } from '../hooks/useServerCountdown';
@@ -10,6 +11,7 @@ import {
   selectIsMasterView,
   useAppStore,
 } from '../store/appStore';
+import { LanguageSwitcher } from './LanguageSwitcher';
 import { MasterDashboard } from './MasterDashboard';
 
 interface DayFlowProps {
@@ -40,9 +42,14 @@ function Shell({
   subtitle?: string;
   children: ReactNode;
 }) {
+  const { t } = useTranslation();
+
   return (
     <div className="page-shell">
-      <p className="fluid-label text-[var(--nocturna-amber)]">Nocturna</p>
+      <div className="flex items-start justify-between gap-2">
+        <p className="fluid-label text-[var(--nocturna-amber)]">{t('day.brand')}</p>
+        <LanguageSwitcher />
+      </div>
       <h1 className="font-display fluid-title mt-2">{title}</h1>
       {subtitle && (
         <p className="mt-2 fluid-body text-stone-400">{subtitle}</p>
@@ -53,17 +60,18 @@ function Shell({
 }
 
 function DawnView({ view }: { view: SanitizedGameState }) {
+  const { t } = useTranslation();
   const remaining = useServerCountdown(view.phaseEndsAt, view.serverNow);
   const victims = view.dawnAnnouncement?.victimNames ?? [];
   const saved = view.dawnAnnouncement?.savedNames ?? [];
   return (
     <Shell
-      title="Fase Risveglio"
-      subtitle={`L'alba rivela i caduti · ${formatMs(remaining)}`}
+      title={t('day.dawnTitle')}
+      subtitle={t('day.dawnSubtitle', { time: formatMs(remaining) })}
     >
       <div className="animate-rise rounded-2xl border border-white/10 bg-black/40 p-4 sm:p-5">
         {victims.length === 0 ? (
-          <p className="text-lg text-stone-300">Nessuna vittima stanotte.</p>
+          <p className="text-lg text-stone-300">{t('day.noVictims')}</p>
         ) : (
           <ul className="space-y-2">
             {victims.map((n) => (
@@ -78,15 +86,15 @@ function DawnView({ view }: { view: SanitizedGameState }) {
         )}
         {saved.length > 0 && (
           <p className="mt-4 fluid-body text-stone-500 break-words">
-            Protezione attiva su: {saved.join(', ')}
+            {t('day.protectionOn', { names: saved.join(', ') })}
           </p>
         )}
         {view.you.lastInspectResult && (
           <p className="mt-6 rounded-xl border border-white/10 bg-black/50 p-3 fluid-body text-stone-300">
-            Visione privata: {view.you.lastInspectResult.targetName} →{' '}
-            <span className="text-[var(--nocturna-amber)]">
-              {view.you.lastInspectResult.revealed}
-            </span>
+            {t('day.privateVision', {
+              target: view.you.lastInspectResult.targetName,
+              revealed: view.you.lastInspectResult.revealed,
+            })}
           </p>
         )}
       </div>
@@ -95,11 +103,12 @@ function DawnView({ view }: { view: SanitizedGameState }) {
 }
 
 function DiscussionView({ view }: { view: SanitizedGameState }) {
+  const { t } = useTranslation();
   const remaining = useServerCountdown(view.phaseEndsAt, view.serverNow);
   return (
     <Shell
-      title="Fase Discussione"
-      subtitle={`Parlate. Il tribunale si apre tra ${formatMs(remaining)}.`}
+      title={t('day.discussionTitle')}
+      subtitle={t('day.discussionSubtitle', { time: formatMs(remaining) })}
     >
       <ul className="scroll-stack space-y-2">
         {view.players
@@ -122,6 +131,7 @@ function DiscussionView({ view }: { view: SanitizedGameState }) {
 }
 
 function TribunalView({ view }: { view: SanitizedGameState }) {
+  const { t } = useTranslation();
   const remaining = useServerCountdown(view.phaseEndsAt, view.serverNow);
   const me = view.players.find((p) => p.id === view.you.playerId);
   const canVote = me?.isAlive && !me.isMaster;
@@ -135,16 +145,16 @@ function TribunalView({ view }: { view: SanitizedGameState }) {
 
   return (
     <Shell
-      title="Fase Tribunale"
+      title={t('day.tribunalTitle')}
       subtitle={
         view.phase === 'BALLOT'
-          ? 'Spoglio in corso…'
-          : `Votate · ${formatMs(remaining)}`
+          ? t('day.tribunalTally')
+          : t('day.tribunalVoting', { time: formatMs(remaining) })
       }
     >
       {runoff && (
         <p className="mb-4 fluid-body text-[var(--nocturna-amber)]">
-          Ballottaggio: solo i candidati in pareggio.
+          {t('day.runoff')}
         </p>
       )}
       <ul className="space-y-2">
@@ -184,7 +194,7 @@ function TribunalView({ view }: { view: SanitizedGameState }) {
             getSocket().emit('tribunal:vote', { targetPlayerId: 'ABSTAIN' })
           }
         >
-          Astenuti
+          {t('day.abstain')}
         </button>
       )}
     </Shell>
@@ -192,13 +202,14 @@ function TribunalView({ view }: { view: SanitizedGameState }) {
 }
 
 function EndedView({ view }: { view: SanitizedGameState }) {
+  const { t } = useTranslation();
   const isHost = view.players.some(
     (p) => p.id === view.you.playerId && p.isHost,
   );
   return (
     <Shell
-      title="Fine partita"
-      subtitle={view.ending?.summary ?? 'La notte è finita.'}
+      title={t('day.endedTitle')}
+      subtitle={view.ending?.summary ?? t('day.endedFallback')}
     >
       <ul className="scroll-stack space-y-2">
         {view.ending?.reveal.map((r) => (
@@ -209,7 +220,8 @@ function EndedView({ view }: { view: SanitizedGameState }) {
             <span className="min-w-0">
               <span className="block truncate">{r.displayName}</span>
               <span className="mt-0.5 block truncate text-xs text-stone-500">
-                {r.roleName} · {r.faction}
+                {r.roleName} ·{' '}
+                {t(`factions.${r.faction}`, { defaultValue: r.faction })}
               </span>
             </span>
             <span
@@ -217,7 +229,7 @@ function EndedView({ view }: { view: SanitizedGameState }) {
                 r.survived ? 'text-emerald-500' : 'text-stone-600'
               }`}
             >
-              {r.survived ? 'vivo' : 'caduto'}
+              {r.survived ? t('day.alive') : t('day.dead')}
             </span>
           </li>
         ))}
@@ -228,7 +240,7 @@ function EndedView({ view }: { view: SanitizedGameState }) {
           className="btn-primary mt-6"
           onClick={() => getSocket().emit('game:rematch', {})}
         >
-          Rivincita
+          {t('day.rematch')}
         </button>
       )}
     </Shell>

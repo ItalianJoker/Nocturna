@@ -64,17 +64,8 @@ function publicPlayers(state: GameState): SanitizedGameState['players'] {
 function settingsPublic(
   state: GameState,
 ): SanitizedGameState['settings'] {
-  const s = state.settings;
-  return {
-    roomName: s.roomName,
-    moderatorMode: s.moderatorMode,
-    hapticPolicy: s.hapticPolicy,
-    ambientAudioEnabled: s.ambientAudioEnabled,
-    discussionDurationMs: s.discussionDurationMs,
-    tribunalDurationMs: s.tribunalDurationMs,
-    voteVisibility: s.voteVisibility,
-    tieBreakPolicy: s.tieBreakPolicy,
-  };
+  // Full RoomSettings copy — no secrets; Host timers must be visible/editable.
+  return { ...state.settings };
 }
 
 function dawnBlock(

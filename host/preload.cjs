@@ -2,7 +2,9 @@ const { contextBridge, ipcRenderer } = require('electron');
 
 contextBridge.exposeInMainWorld('nocturnaHost', {
   getStatus: () => ipcRenderer.invoke('get-status'),
-  openLocal: (url) => ipcRenderer.invoke('open-local', url),
+  getSettings: () => ipcRenderer.invoke('get-settings'),
+  saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+  openUrl: (url) => ipcRenderer.invoke('open-url', url),
   quit: () => ipcRenderer.invoke('quit-host'),
   onStatus: (cb) => {
     const handler = (_e, data) => cb(data);

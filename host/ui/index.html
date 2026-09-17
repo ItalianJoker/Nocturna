@@ -18,19 +18,11 @@
         --mist: #a8a29e;
         --safe-b: env(safe-area-inset-bottom, 0px);
       }
-      * {
-        box-sizing: border-box;
-      }
-      html,
-      body {
+      * { box-sizing: border-box; }
+      html, body {
         margin: 0;
         min-height: 100%;
-        background: radial-gradient(
-            ellipse 100% 60% at 50% 0%,
-            #3f1525 0%,
-            transparent 55%
-          ),
-          var(--bg);
+        background: radial-gradient(ellipse 100% 60% at 50% 0%, #3f1525 0%, transparent 55%), var(--bg);
         color: var(--paper);
         font-family: 'Segoe UI', system-ui, sans-serif;
         overflow-x: hidden;
@@ -52,11 +44,7 @@
         margin: 0.35rem 0 0;
         line-height: 1;
       }
-      p {
-        color: var(--mist);
-        font-size: 0.9rem;
-        line-height: 1.45;
-      }
+      p { color: var(--mist); font-size: 0.9rem; line-height: 1.45; }
       .card {
         background: var(--panel);
         border: 1px solid rgb(255 255 255 / 0.1);
@@ -64,29 +52,11 @@
         padding: 0.9rem 1rem;
         margin-top: 1rem;
       }
-      .status {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.45rem;
-        font-size: 0.85rem;
-      }
-      .dot {
-        width: 0.55rem;
-        height: 0.55rem;
-        border-radius: 999px;
-        background: #57534e;
-      }
-      .dot.on {
-        background: #059669;
-      }
-      .dot.err {
-        background: #e11d48;
-      }
-      ul {
-        list-style: none;
-        padding: 0;
-        margin: 0.6rem 0 0;
-      }
+      .status { display: inline-flex; align-items: center; gap: 0.45rem; font-size: 0.85rem; }
+      .dot { width: 0.55rem; height: 0.55rem; border-radius: 999px; background: #57534e; }
+      .dot.on { background: #059669; }
+      .dot.err { background: #e11d48; }
+      ul { list-style: none; padding: 0; margin: 0.6rem 0 0; }
       li {
         word-break: break-all;
         font-family: ui-monospace, monospace;
@@ -94,97 +64,199 @@
         padding: 0.55rem 0;
         border-top: 1px solid rgb(255 255 255 / 0.06);
       }
-      li:first-child {
-        border-top: 0;
-      }
-      .actions {
-        display: flex;
-        flex-direction: column;
-        gap: 0.55rem;
-        margin-top: 1rem;
-      }
-      button {
+      li:first-child { border-top: 0; }
+      .actions { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 1rem; }
+      button, .field {
         min-height: 44px;
-        border: 0;
         border-radius: 0.75rem;
         padding: 0.7rem 1rem;
         font-size: 0.95rem;
         font-weight: 600;
+      }
+      button {
+        border: 0;
         cursor: pointer;
         touch-action: manipulation;
       }
-      .primary {
-        background: var(--crimson);
-        color: #fff;
-      }
+      .primary { background: var(--crimson); color: #fff; }
       .ghost {
         background: transparent;
         color: var(--paper);
         border: 1px solid rgb(255 255 255 / 0.15);
       }
+      label.field-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 0.35rem;
+        margin-top: 0.75rem;
+        font-size: 0.75rem;
+        color: var(--mist);
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+      }
+      .field {
+        border: 1px solid rgb(255 255 255 / 0.12);
+        background: rgb(0 0 0 / 0.45);
+        color: var(--paper);
+        font-weight: 500;
+        text-transform: none;
+        letter-spacing: normal;
+      }
       #log {
         margin-top: 0.75rem;
-        max-height: 8rem;
+        max-height: 6rem;
         overflow: auto;
         font-family: ui-monospace, monospace;
         font-size: 0.7rem;
         color: #78716c;
         white-space: pre-wrap;
       }
+      .warn { color: #fda4af; font-size: 0.85rem; margin-top: 0.5rem; }
+      .lang { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+      .lang button { flex: 1; }
     </style>
   </head>
   <body>
     <main>
-      <div class="label">Host console</div>
+      <div class="label" id="eyebrow">Host console</div>
       <h1>Nocturna</h1>
-      <p>
-        Avvia il server sulla LAN. I giocatori aprono l’URL dal telefono (o
-        scansionano il QR in lobby) — senza installare Node.
+      <p id="blurb">
+        Start the LAN server. Players open the URL on their phones — never
+        localhost in the QR.
       </p>
+
+      <div class="lang">
+        <button type="button" class="ghost" data-lang="it">Italiano</button>
+        <button type="button" class="ghost" data-lang="en">English</button>
+      </div>
 
       <div class="card">
         <div class="status">
           <span class="dot" id="dot"></span>
-          <span id="statusText">Avvio…</span>
+          <span id="statusText">Starting…</span>
         </div>
+        <p class="warn" id="warn" hidden></p>
         <ul id="urls"></ul>
+        <label class="field-wrap">
+          <span id="portLabel">Port</span>
+          <input class="field" id="portInput" type="number" min="1" max="65535" />
+        </label>
+        <label class="field-wrap">
+          <span id="advLabel">Advertise override (IP/host)</span>
+          <input class="field" id="advInput" type="text" placeholder="192.168.1.20" />
+        </label>
+        <p id="advHint" style="font-size:0.8rem;margin:0.4rem 0 0">
+          Optional. Never localhost / 127.0.0.1.
+        </p>
       </div>
 
       <div class="actions">
+        <button class="primary" id="applyBtn" type="button">Apply &amp; restart</button>
         <button class="primary" id="openBtn" type="button" disabled>
-          Apri sul computer Host
+          Open on Host computer
         </button>
-        <button class="ghost" id="refreshBtn" type="button">Aggiorna</button>
-        <button class="ghost" id="quitBtn" type="button">Chiudi Host</button>
+        <button class="ghost" id="refreshBtn" type="button">Refresh</button>
+        <button class="ghost" id="quitBtn" type="button">Quit Host</button>
       </div>
       <div id="log"></div>
     </main>
     <script>
+      const copy = {
+        it: {
+          eyebrow: 'Host console',
+          blurb: 'Avvia il server sulla LAN. I giocatori aprono l’URL dal telefono — mai localhost nel QR.',
+          starting: 'Avvio…',
+          running: (p) => 'Server attivo · porta ' + p,
+          stopped: 'Server spento',
+          open: 'Apri sul computer Host',
+          refresh: 'Aggiorna',
+          quit: 'Chiudi Host',
+          apply: 'Applica e riavvia',
+          port: 'Porta',
+          adv: 'Override advertise (IP/host)',
+          hint: 'Opzionale. Mai localhost / 127.0.0.1.',
+          noLan: 'Nessun IP LAN — collega il Wi‑Fi o imposta un override.',
+        },
+        en: {
+          eyebrow: 'Host console',
+          blurb: 'Start the LAN server. Players open the URL on their phones — never localhost in the QR.',
+          starting: 'Starting…',
+          running: (p) => 'Server running · port ' + p,
+          stopped: 'Server stopped',
+          open: 'Open on Host computer',
+          refresh: 'Refresh',
+          quit: 'Quit Host',
+          apply: 'Apply & restart',
+          port: 'Port',
+          adv: 'Advertise override (IP/host)',
+          hint: 'Optional. Never localhost / 127.0.0.1.',
+          noLan: 'No LAN IP — connect Wi‑Fi or set an override.',
+        },
+      };
+
+      let lang = 'it';
+      let localAdminUrl = null;
+      let advertiseBase = null;
+
       const dot = document.getElementById('dot');
       const statusText = document.getElementById('statusText');
       const urlsEl = document.getElementById('urls');
+      const warnEl = document.getElementById('warn');
       const openBtn = document.getElementById('openBtn');
       const refreshBtn = document.getElementById('refreshBtn');
       const quitBtn = document.getElementById('quitBtn');
+      const applyBtn = document.getElementById('applyBtn');
+      const portInput = document.getElementById('portInput');
+      const advInput = document.getElementById('advInput');
       const logEl = document.getElementById('log');
-      let localUrl = null;
+
+      function applyLang() {
+        const c = copy[lang];
+        document.getElementById('eyebrow').textContent = c.eyebrow;
+        document.getElementById('blurb').textContent = c.blurb;
+        document.getElementById('portLabel').textContent = c.port;
+        document.getElementById('advLabel').textContent = c.adv;
+        document.getElementById('advHint').textContent = c.hint;
+        openBtn.textContent = c.open;
+        refreshBtn.textContent = c.refresh;
+        quitBtn.textContent = c.quit;
+        applyBtn.textContent = c.apply;
+      }
 
       function render(status) {
+        const c = copy[lang];
         if (!status) return;
+        if (status.settings) {
+          portInput.value = status.settings.port || status.port || 3001;
+          advInput.value = status.settings.advertiseHost || '';
+          if (status.settings.lang) lang = status.settings.lang;
+          applyLang();
+        }
         if (status.running) {
           dot.className = 'dot on';
-          statusText.textContent = 'Server attivo · porta ' + status.port;
+          statusText.textContent = c.running(status.port);
           openBtn.disabled = false;
-          localUrl = status.localUrl;
-          const all = [status.localUrl, ...(status.lanUrls || [])];
-          urlsEl.innerHTML = all
-            .map((u) => '<li>' + u + '</li>')
-            .join('');
+          localAdminUrl = status.localAdminUrl;
+          advertiseBase = status.advertiseBase;
+          const list = [];
+          if (status.advertiseBase) list.push(status.advertiseBase + '  ← QR/join');
+          for (const u of status.lanUrls || []) {
+            if (u !== status.advertiseBase) list.push(u);
+          }
+          urlsEl.innerHTML = list.map((u) => '<li>' + u + '</li>').join('');
+          if (status.error) {
+            warnEl.hidden = false;
+            warnEl.textContent = status.error;
+          } else {
+            warnEl.hidden = true;
+          }
         } else {
           dot.className = 'dot err';
-          statusText.textContent = status.error || 'Server spento';
+          statusText.textContent = status.error || c.stopped;
           openBtn.disabled = true;
           urlsEl.innerHTML = '';
+          warnEl.hidden = !status.error;
+          warnEl.textContent = status.error || '';
         }
       }
 
@@ -203,11 +275,38 @@
         logEl.scrollTop = logEl.scrollHeight;
       });
 
+      document.querySelectorAll('[data-lang]').forEach((btn) => {
+        btn.addEventListener('click', async () => {
+          lang = btn.getAttribute('data-lang');
+          applyLang();
+          const settings = await window.nocturnaHost.getSettings();
+          await window.nocturnaHost.saveSettings({ ...settings, lang });
+          refresh();
+        });
+      });
+
+      applyBtn.addEventListener('click', async () => {
+        const res = await window.nocturnaHost.saveSettings({
+          port: Number(portInput.value),
+          advertiseHost: advInput.value.trim(),
+          lang,
+        });
+        if (!res?.ok) {
+          warnEl.hidden = false;
+          warnEl.textContent = res?.error || 'Failed';
+          return;
+        }
+        render(res.status);
+      });
+
       openBtn.addEventListener('click', () => {
-        if (localUrl) window.nocturnaHost.openLocal(localUrl);
+        // Host PC may open loopback admin URL; phones use advertiseBase / QR.
+        if (localAdminUrl) window.nocturnaHost.openUrl(localAdminUrl);
       });
       refreshBtn.addEventListener('click', refresh);
       quitBtn.addEventListener('click', () => window.nocturnaHost.quit());
+
+      applyLang();
       refresh();
     </script>
   </body>

@@ -169,6 +169,50 @@ export function registerSocketHandlers(io: NocturnaServer): void {
               ? 'NONE'
               : room.settings.hapticPolicy,
       };
+      // Coerce numeric timer fields when provided (Host UI sends seconds×1000).
+      const numericKeys = [
+        'discussionDurationMs',
+        'tribunalDurationMs',
+        'defaultNightTurnDurationMs',
+        'dawnDurationMs',
+        'ballotRevealDurationMs',
+        'assistedTimerMultiplier',
+      ] as const;
+      for (const key of numericKeys) {
+        if (payload.settings[key] !== undefined) {
+          const n = Number(payload.settings[key]);
+          if (Number.isFinite(n) && n > 0) {
+            next[key] = n;
+          }
+        }
+      }
+      if (typeof payload.settings.roomName === 'string') {
+        next.roomName = payload.settings.roomName.slice(0, 64);
+      }
+      if (typeof payload.settings.ambientAudioEnabled === 'boolean') {
+        next.ambientAudioEnabled = payload.settings.ambientAudioEnabled;
+      }
+      if (typeof payload.settings.allowLateJoin === 'boolean') {
+        next.allowLateJoin = payload.settings.allowLateJoin;
+      }
+      if (
+        payload.settings.tieBreakPolicy === 'NO_ELIMINATION' ||
+        payload.settings.tieBreakPolicy === 'RUNOFF'
+      ) {
+        next.tieBreakPolicy = payload.settings.tieBreakPolicy;
+      }
+      if (
+        payload.settings.voteVisibility === 'SECRET' ||
+        payload.settings.voteVisibility === 'PUBLIC'
+      ) {
+        next.voteVisibility = payload.settings.voteVisibility;
+      }
+      if (
+        payload.settings.moderatorMode === 'AUTOMATED' ||
+        payload.settings.moderatorMode === 'ASSISTED'
+      ) {
+        next.moderatorMode = payload.settings.moderatorMode;
+      }
       room.settings = next;
 
       if (next.moderatorMode === 'AUTOMATED') {

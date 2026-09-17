@@ -9,15 +9,18 @@ import {
   SkipForward,
   Trash2,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { MasterGameState } from '@nocturna/shared';
 import { getSocket } from '../lib/socket';
 import { formatMs, useServerCountdown } from '../hooks/useServerCountdown';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 interface MasterDashboardProps {
   view: MasterGameState;
 }
 
 export function MasterDashboard({ view }: MasterDashboardProps) {
+  const { t } = useTranslation();
   const remaining = useServerCountdown(view.phaseEndsAt, view.serverNow);
   const turn = view.nightQueue[view.currentTurnIndex];
 
@@ -35,22 +38,25 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
   return (
     <div className="page-shell page-shell--master gap-4">
       <header className="animate-rise shrink-0">
-        <p className="fluid-label text-[var(--nocturna-crimson-hot)]">
-          Master · God-View
-        </p>
+        <div className="flex items-start justify-between gap-2">
+          <p className="fluid-label text-[var(--nocturna-crimson-hot)]">
+            {t('master.eyebrow')}
+          </p>
+          <LanguageSwitcher />
+        </div>
         <h1 className="font-display fluid-title mt-1 text-[var(--nocturna-paper)]">
           {view.settings.roomName}
         </h1>
         <p className="mt-2 fluid-body text-stone-400">
-          Fase: <span className="text-stone-200">{view.phase}</span>
+          {t('master.phase', { phase: t(`phases.${view.phase}`) })}
           {view.phaseEndsAt ? ` · ${formatMs(remaining)}` : ''}
-          {view.isPaused ? ' · IN PAUSA' : ''}
+          {view.isPaused ? ` · ${t('master.paused')}` : ''}
         </p>
       </header>
 
       <div className="scroll-stack pb-2">
         <section className="rounded-2xl border border-white/10 bg-[var(--nocturna-panel)] p-3 sm:p-4">
-          <h2 className="font-display fluid-h2">Plancia giocatori</h2>
+          <h2 className="font-display fluid-h2">{t('master.roster')}</h2>
           <ul className="mt-3 divide-y divide-white/5">
             {view.masterRoster.map((p) => (
               <li
@@ -64,12 +70,15 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                     }`}
                   >
                     {p.displayName}
-                    {p.isMaster ? ' · Master' : ''}
-                    {!p.isConnected ? ' · offline' : ''}
+                    {p.isMaster ? ` · ${t('lobby.master')}` : ''}
+                    {!p.isConnected ? ` · ${t('master.offline')}` : ''}
                   </p>
                   <p className="truncate text-xs text-stone-500">
-                    {p.roleName ?? '—'} · {p.faction ?? '—'}
-                    {p.isProtected ? ' · protetto' : ''}
+                    {p.roleName ?? '—'} ·{' '}
+                    {p.faction
+                      ? t(`factions.${p.faction}`, { defaultValue: p.faction })
+                      : '—'}
+                    {p.isProtected ? ` · ${t('master.protected')}` : ''}
                   </p>
                 </div>
                 <span
@@ -84,17 +93,17 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
 
         {view.phase === 'ROLE_REVEAL' && (
           <button type="button" onClick={emit.beginNight} className="btn-primary">
-            Inizia la notte
+            {t('master.beginNight')}
           </button>
         )}
 
         {view.phase === 'NIGHT' && (
           <section className="rounded-2xl border border-[var(--nocturna-crimson)]/30 bg-black/40 p-3 sm:p-4">
-            <h2 className="font-display fluid-h2">Stepper notturno</h2>
+            <h2 className="font-display fluid-h2">{t('master.stepper')}</h2>
             <ol className="mt-3 max-h-[40dvh] space-y-2 overflow-y-auto overscroll-contain fluid-body">
-              {view.nightQueue.map((t, i) => (
+              {view.nightQueue.map((nightTurn, i) => (
                 <li
-                  key={t.turnId}
+                  key={nightTurn.turnId}
                   className={`rounded-lg border px-3 py-2.5 ${
                     i === view.currentTurnIndex
                       ? 'border-[var(--nocturna-amber)]/50 bg-[var(--nocturna-amber)]/10'
@@ -104,11 +113,11 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                   }`}
                 >
                   <p className="font-medium">
-                    {i + 1}. Chiama: {t.roleName}
+                    {i + 1}. {t('master.call', { role: nightTurn.roleName })}
                   </p>
                   <p className="text-xs text-stone-500 break-words">
-                    {t.actionType} ·{' '}
-                    {t.actorPlayerIds
+                    {nightTurn.actionType} ·{' '}
+                    {nightTurn.actorPlayerIds
                       .map(
                         (id) =>
                           view.masterRoster.find((p) => p.id === id)
@@ -118,14 +127,13 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                   </p>
                   {i === view.currentTurnIndex && turn && (
                     <p className="mt-1 text-xs text-[var(--nocturna-amber)]">
-                      In corso · conferma{' '}
-                      {
-                        view.pendingActions.filter(
+                      {t('master.inProgress', {
+                        done: view.pendingActions.filter(
                           (a) =>
                             !a.isNullAction && a.actorRoleId === turn.roleId,
-                        ).length
-                      }
-                      /{turn.actorPlayerIds.length}
+                        ).length,
+                        total: turn.actorPlayerIds.length,
+                      })}
                     </p>
                   )}
                 </li>
@@ -138,7 +146,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                 onClick={emit.advance}
                 className="touch-target inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nocturna-crimson)] px-4 py-3 text-sm text-white sm:w-auto"
               >
-                <FastForward className="h-4 w-4 shrink-0" /> Forza avanzamento
+                <FastForward className="h-4 w-4 shrink-0" /> {t('master.forceAdvance')}
               </button>
               <button
                 type="button"
@@ -147,11 +155,11 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
               >
                 {view.isPaused ? (
                   <>
-                    <Play className="h-4 w-4" /> Riprendi
+                    <Play className="h-4 w-4" /> {t('master.resume')}
                   </>
                 ) : (
                   <>
-                    <Pause className="h-4 w-4" /> Pausa
+                    <Pause className="h-4 w-4" /> {t('master.pause')}
                   </>
                 )}
               </button>
@@ -161,7 +169,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
 
         {view.pendingActions.length > 0 && view.phase === 'NIGHT' && (
           <section className="rounded-2xl border border-white/10 p-3 sm:p-4">
-            <h2 className="font-display fluid-h2">Azioni in coda</h2>
+            <h2 className="font-display fluid-h2">{t('master.pending')}</h2>
             <ul className="mt-2 space-y-2 fluid-body">
               {view.pendingActions.map((a) => (
                 <li
@@ -176,7 +184,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                     type="button"
                     className="touch-target shrink-0 rounded-lg border border-white/10 p-2 text-stone-400"
                     onClick={() => emit.cancel(a.id)}
-                    aria-label="Annulla azione"
+                    aria-label={t('master.cancelAction')}
                   >
                     <Trash2 className="h-4 w-4" />
                   </button>
@@ -196,7 +204,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                 onClick={emit.advance}
                 className="touch-target inline-flex w-full items-center justify-center gap-2 rounded-xl bg-[var(--nocturna-crimson)] px-4 py-3 text-sm text-white sm:w-auto"
               >
-                <SkipForward className="h-4 w-4" /> Vai alla discussione
+                <SkipForward className="h-4 w-4" /> {t('master.toDiscussion')}
               </button>
             )}
             {view.phase === 'DISCUSSION' && (
@@ -205,7 +213,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                 onClick={() => emit.phase('TRIBUNAL')}
                 className="btn-primary sm:w-auto"
               >
-                Apri tribunale
+                {t('master.openTribunal')}
               </button>
             )}
             {view.phase === 'TRIBUNAL' && (
@@ -214,7 +222,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                 onClick={emit.advance}
                 className="btn-primary sm:w-auto"
               >
-                Chiudi votazione
+                {t('master.closeVote')}
               </button>
             )}
             <button
@@ -222,7 +230,7 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
               onClick={() => emit.pause(!view.isPaused)}
               className="btn-ghost w-full sm:w-auto"
             >
-              {view.isPaused ? 'Riprendi' : 'Pausa'}
+              {view.isPaused ? t('master.resume') : t('master.pause')}
             </button>
           </div>
         )}
