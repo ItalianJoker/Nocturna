@@ -42,14 +42,17 @@ export function RoleReveal({ view }: RoleRevealProps) {
   }
 
   const roleId = view.you.roleId;
-  const roleName = roleId
-    ? t(`roles.${roleId}.name`, { defaultValue: view.you.roleName ?? '' })
-    : view.you.roleName;
-  const roleDesc = roleId
-    ? t(`roles.${roleId}.description`, {
-        defaultValue: view.you.roleDescription ?? '',
-      })
-    : view.you.roleDescription;
+  // Prefer Host-edited deck text from the server; fall back to locale catalog.
+  const roleName =
+    view.you.roleName?.trim() ||
+    (roleId
+      ? t(`roles.${roleId}.name`, { defaultValue: '' })
+      : '');
+  const roleDesc =
+    view.you.roleDescription?.trim() ||
+    (roleId
+      ? t(`roles.${roleId}.description`, { defaultValue: '' })
+      : '');
   const factionLabel = view.you.faction
     ? t(`factions.${view.you.faction}`)
     : '';

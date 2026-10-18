@@ -117,7 +117,10 @@ export function MasterDashboard({ view }: MasterDashboardProps) {
                       {i + 1}. {t('master.call', { role: nightTurn.roleName })}
                     </p>
                     <p className="text-xs text-stone-500 break-words">
-                      {nightTurn.actionType} ·{' '}
+                      {t(`roles.actionLabel.${nightTurn.actionType}`, {
+                        defaultValue: nightTurn.actionType,
+                      })}{' '}
+                      ·{' '}
                       {nightTurn.actorPlayerIds
                         .map(
                           (id) =>

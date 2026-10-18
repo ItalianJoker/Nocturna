@@ -7,6 +7,14 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+### Added
+- Lobby **Roles in this game** guide: name, faction, editable description before deal (IT/EN).
+- Plain-language tooltips / help under Frequency, Action, masking, copies, and opaque Host settings.
+
+### Changed
+- Role schedule selects no longer show raw enums (`EVERY_NIGHT`, `SINGLE_TARGET`, …) — translated labels + help in IT/EN.
+- Master night stepper shows localized action labels; role reveal prefers Host-edited deck text.
+
 ### Fixed
 - Windows portable Host: embed `@nocturna/shared` is now a real copy (not a Unix symlink), so the Electron child no longer dies with `MODULE_NOT_FOUND` and a opaque “Health check timeout”.
 - Host: bind always `0.0.0.0`; advertise override is QR/join only; health polls `127.0.0.1`; Refresh/lang no longer restart the server; clearer spawn/stderr/port-in-use errors.
