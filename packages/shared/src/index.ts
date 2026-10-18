@@ -9,6 +9,7 @@ export * from './types.js';
 export * from './nightScheduler.js';
 export * from './nightResolution.js';
 export * from './defaultRoles.js';
+export * from './recommendedSetups.js';
 export * from './winConditions.js';
 export * from './sanitize.js';
 export * from './socketEvents.js';

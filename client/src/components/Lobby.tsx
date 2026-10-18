@@ -18,6 +18,10 @@ import {
 } from '@nocturna/shared';
 import { getSocket } from '../lib/socket';
 import { RoleScheduleEditor } from './RoleScheduleEditor';
+import { RolesDeckGuide } from './RolesDeckGuide';
+import { RecommendedSetups } from './RecommendedSetups';
+import { LobbyRules } from './LobbyRules';
+import { FieldHelp } from './FieldHelp';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAppStore } from '../store/appStore';
 import {
@@ -26,6 +30,21 @@ import {
 } from '../hooks/useJoinAdvertise';
 
 const PRESET_KEY = 'nocturna.presets.v1';
+
+/** Localize built-in role name/description from i18n when seeding a fresh deck. */
+function localizeRoleDeck(
+  deck: RoleDefinition[],
+  translate: (key: string, opts?: { defaultValue?: string }) => string,
+): RoleDefinition[] {
+  return deck.map((r) => ({
+    ...r,
+    name: translate(`roles.${r.id}.name`, { defaultValue: r.name }),
+    description: translate(`roles.${r.id}.description`, {
+      defaultValue: r.description,
+    }),
+    wakeSchedule: { ...r.wakeSchedule },
+  }));
+}
 
 export function HomeGate() {
   const session = useAppStore((s) => s.session);
@@ -248,9 +267,9 @@ function LobbyRoom() {
       return;
     }
     if (!draftDeck) {
-      setDraftDeck(createDefaultRoleDeck());
+      setDraftDeck(localizeRoleDeck(createDefaultRoleDeck(), t));
     }
-  }, [isHost, view.hostDeck, draftDeck, setDraftDeck]);
+  }, [isHost, view.hostDeck, draftDeck, setDraftDeck, t]);
 
   const joinUrl = useMemo(() => {
     if (!advertise.base) return null;
@@ -392,6 +411,8 @@ function LobbyRoom() {
               ))}
             </ul>
           </section>
+
+          <LobbyRules />
         </div>
 
         {isHost && (
@@ -412,6 +433,8 @@ function LobbyRoom() {
                   <select
                     className="field-input"
                     value={view.settings.moderatorMode}
+                    aria-describedby="help-mode"
+                    title={t('lobby.modeHelp')}
                     onChange={(e) =>
                       patchSettings({
                         moderatorMode: e.target
@@ -422,6 +445,9 @@ function LobbyRoom() {
                     <option value="AUTOMATED">{t('lobby.modeAutomated')}</option>
                     <option value="ASSISTED">{t('lobby.modeAssisted')}</option>
                   </select>
+                  <FieldHelp id="help-mode" label={t('help.aboutOption')}>
+                    {t('lobby.modeHelp')}
+                  </FieldHelp>
                 </label>
                 {view.settings.moderatorMode === 'ASSISTED' && (
                   <label className="flex flex-col gap-1 text-xs text-stone-400">
@@ -451,6 +477,8 @@ function LobbyRoom() {
                   <select
                     className="field-input"
                     value={view.settings.hapticPolicy}
+                    aria-describedby="help-haptics"
+                    title={t('lobby.hapticsHelp')}
                     onChange={(e) =>
                       patchSettings({
                         hapticPolicy: e.target
@@ -463,12 +491,15 @@ function LobbyRoom() {
                       {t('lobby.hapticsHeartbeat')}
                     </option>
                   </select>
+                  <FieldHelp id="help-haptics">{t('lobby.hapticsHelp')}</FieldHelp>
                 </label>
                 <label className="flex flex-col gap-1 text-xs text-stone-400">
                   {t('lobby.voteVisibility')}
                   <select
                     className="field-input"
                     value={view.settings.voteVisibility}
+                    aria-describedby="help-vote-vis"
+                    title={t('lobby.voteVisibilityHelp')}
                     onChange={(e) =>
                       patchSettings({
                         voteVisibility: e.target
@@ -479,12 +510,17 @@ function LobbyRoom() {
                     <option value="SECRET">{t('lobby.voteSecret')}</option>
                     <option value="PUBLIC">{t('lobby.votePublic')}</option>
                   </select>
+                  <FieldHelp id="help-vote-vis">
+                    {t('lobby.voteVisibilityHelp')}
+                  </FieldHelp>
                 </label>
                 <label className="flex flex-col gap-1 text-xs text-stone-400">
                   {t('lobby.tieBreak')}
                   <select
                     className="field-input"
                     value={view.settings.tieBreakPolicy}
+                    aria-describedby="help-tie"
+                    title={t('lobby.tieBreakHelp')}
                     onChange={(e) =>
                       patchSettings({
                         tieBreakPolicy: e.target
@@ -495,40 +531,59 @@ function LobbyRoom() {
                     <option value="NO_ELIMINATION">{t('lobby.tieNoBurn')}</option>
                     <option value="RUNOFF">{t('lobby.tieRunoff')}</option>
                   </select>
+                  <FieldHelp id="help-tie">{t('lobby.tieBreakHelp')}</FieldHelp>
                 </label>
-                <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
-                  <span>{t('lobby.ambientAudio')}</span>
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 shrink-0"
-                    checked={view.settings.ambientAudioEnabled}
-                    onChange={(e) =>
-                      patchSettings({ ambientAudioEnabled: e.target.checked })
-                    }
-                  />
-                </label>
-                <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
-                  <span>{t('lobby.allowLateJoin')}</span>
-                  <input
-                    type="checkbox"
-                    className="h-5 w-5 shrink-0"
-                    checked={view.settings.allowLateJoin}
-                    onChange={(e) =>
-                      patchSettings({ allowLateJoin: e.target.checked })
-                    }
-                  />
-                </label>
+                <div className="flex flex-col gap-1">
+                  <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
+                    <span>{t('lobby.ambientAudio')}</span>
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5 shrink-0"
+                      checked={view.settings.ambientAudioEnabled}
+                      aria-describedby="help-ambient"
+                      title={t('lobby.ambientAudioHelp')}
+                      onChange={(e) =>
+                        patchSettings({ ambientAudioEnabled: e.target.checked })
+                      }
+                    />
+                  </label>
+                  <FieldHelp id="help-ambient">
+                    {t('lobby.ambientAudioHelp')}
+                  </FieldHelp>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="flex min-h-[var(--touch-min)] items-center justify-between gap-3 fluid-body text-stone-300">
+                    <span>{t('lobby.allowLateJoin')}</span>
+                    <input
+                      type="checkbox"
+                      className="h-5 w-5 shrink-0"
+                      checked={view.settings.allowLateJoin}
+                      aria-describedby="help-late"
+                      title={t('lobby.allowLateJoinHelp')}
+                      onChange={(e) =>
+                        patchSettings({ allowLateJoin: e.target.checked })
+                      }
+                    />
+                  </label>
+                  <FieldHelp id="help-late">
+                    {t('lobby.allowLateJoinHelp')}
+                  </FieldHelp>
+                </div>
               </div>
               <div className="grid grid-cols-1 gap-2 min-[380px]:grid-cols-2 lg:grid-cols-3">
                 {(
                   [
-                    ['discussionDurationMs', 'lobby.discussionSec'],
-                    ['tribunalDurationMs', 'lobby.tribunalSec'],
-                    ['defaultNightTurnDurationMs', 'lobby.nightTurnSec'],
-                    ['dawnDurationMs', 'lobby.dawnSec'],
-                    ['ballotRevealDurationMs', 'lobby.ballotSec'],
+                    ['discussionDurationMs', 'lobby.discussionSec', null],
+                    ['tribunalDurationMs', 'lobby.tribunalSec', null],
+                    [
+                      'defaultNightTurnDurationMs',
+                      'lobby.nightTurnSec',
+                      'lobby.nightTurnHelp',
+                    ],
+                    ['dawnDurationMs', 'lobby.dawnSec', null],
+                    ['ballotRevealDurationMs', 'lobby.ballotSec', null],
                   ] as const
-                ).map(([key, labelKey]) => (
+                ).map(([key, labelKey, helpKey]) => (
                   <label
                     key={key}
                     className="flex flex-col gap-1 text-xs text-stone-400"
@@ -542,6 +597,8 @@ function LobbyRoom() {
                       value={msToSec(
                         view.settings[key] ?? DEFAULT_ROOM_SETTINGS[key],
                       )}
+                      aria-describedby={helpKey ? `help-${key}` : undefined}
+                      title={helpKey ? t(helpKey) : undefined}
                       onChange={(e) =>
                         patchSettings({
                           [key]:
@@ -549,6 +606,9 @@ function LobbyRoom() {
                         })
                       }
                     />
+                    {helpKey ? (
+                      <FieldHelp id={`help-${key}`}>{t(helpKey)}</FieldHelp>
+                    ) : null}
                   </label>
                 ))}
                 <label className="flex flex-col gap-1 text-xs text-stone-400">
@@ -560,6 +620,8 @@ function LobbyRoom() {
                     step={0.5}
                     className="field-input"
                     value={view.settings.assistedTimerMultiplier ?? 2}
+                    aria-describedby="help-assisted-mult"
+                    title={t('lobby.assistedMultHelp')}
                     onChange={(e) =>
                       patchSettings({
                         assistedTimerMultiplier: Math.max(
@@ -569,6 +631,9 @@ function LobbyRoom() {
                       })
                     }
                   />
+                  <FieldHelp id="help-assisted-mult">
+                    {t('lobby.assistedMultHelp')}
+                  </FieldHelp>
                 </label>
               </div>
               <div className="flex flex-col gap-2 pt-1 sm:flex-row">
@@ -597,7 +662,22 @@ function LobbyRoom() {
         )}
 
         {isHost && draftDeck && (
-          <div className="desktop-split__full">
+          <div className="desktop-split__full space-y-4">
+            <RecommendedSetups
+              playerCount={view.players.filter((p) => !p.isMaster).length}
+              onApply={(deck) => {
+                saveDeck(localizeRoleDeck(deck, t));
+                setToast({
+                  level: 'info',
+                  message: t('lobby.recommendedApplied'),
+                });
+              }}
+            />
+            <RolesDeckGuide
+              deck={draftDeck}
+              editable
+              onChange={saveDeck}
+            />
             <RoleScheduleEditor deck={draftDeck} onChange={saveDeck} />
           </div>
         )}

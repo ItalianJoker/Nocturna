@@ -6,6 +6,11 @@
     "connecting": "Connecting…",
     "language": "Language"
   },
+  "help": {
+    "show": "What does this mean?",
+    "hide": "Hide help",
+    "aboutOption": "About this choice"
+  },
   "welcome": {
     "blurb": "Mobile-first social deduction. Stealth night, automated narrator or assisted Master — with no signals that betray who is awake.",
     "tabJoin": "Join",
@@ -18,6 +23,34 @@
     "wait": "Please wait…",
     "createFailed": "Could not create room",
     "joinFailed": "Could not join"
+  },
+  "rules": {
+    "title": "Rules",
+    "blurb": "How a Nocturna night unfolds — for everyone at the table.",
+    "goal": {
+      "title": "Goal",
+      "body": "Two main sides face each other under the same moon.\n\n• Village wins when every Shadow is gone.\n• Shadows win when they equal or outnumber the living Villagers.\n• Solo / Neutral wanderers may win alone if they are the last one standing.\n\nNever show your role card. Lying is allowed; revealing your private screen is not."
+    },
+    "phases": {
+      "title": "Phases",
+      "body": "A round moves through:\n\n1. Night — eyes closed; protectors and investigators wake first, then the Shadows hunt, then other night roles — all in silence on their phones.\n2. Dawn — the fallen (if any) are announced.\n3. Discussion — talk, accuse, defend.\n4. Tribunal — vote to eliminate someone you believe is a Shadow (ties follow Host settings).\n\nThen the cycle repeats until a side wins. As a rule of thumb, about one Shadow hunter per five seats keeps the table tense without an auto-loss."
+    },
+    "night": {
+      "title": "Night stealth",
+      "body": "During Night every phone stays dark. Nobody should learn who is awake from light, sound, or vibration.\n\nIf haptics are on, every device buzzes the same way. Ambient audio (automated mode) is the same loop for everyone.\n\nConfirming early never ends the wake early — the timer masks who acted first."
+    },
+    "day": {
+      "title": "Day & tribunal",
+      "body": "At dawn, victims of the night (if any) are revealed.\n\nIn Discussion you argue freely. In Tribunal you vote. Ties can mean no elimination or a runoff — the Host chooses before the game starts.\n\nVotes may be secret or public, depending on Host settings."
+    },
+    "modes": {
+      "title": "Game modes",
+      "body": "• Automated narrator — the server calls each night wake on a timer. Everyone is a player.\n• Assisted Master — one person narrates with a God-View dashboard, can pause, force-advance, and cancel actions. The Master is not dealt a role and does not count for win checks."
+    },
+    "stealth": {
+      "title": "Table etiquette",
+      "body": "Keep phones face-down when sleeping. Do not peek at neighbours. Dead players stay silent about their role. The Host’s QR / join link is always a LAN address — never localhost on player phones."
+    }
   },
   "lobby": {
     "title": "Lobby · PIN",
@@ -36,20 +69,28 @@
     "haptics": "Haptics",
     "hapticsNone": "No vibration (default)",
     "hapticsHeartbeat": "Universal heartbeat",
-    "ambientAudio": "Ambient audio (AUTOMATED)",
+    "hapticsHelp": "Default: phones stay silent. “Universal heartbeat” buzzes every phone the same way when a night turn changes — so nobody can tell who woke from vibration alone.",
+    "ambientAudio": "Ambient audio (automated nights)",
+    "ambientAudioHelp": "Soft background loop on every device during automated nights only — same sound for everyone, no role-specific cues.",
     "voteVisibility": "Vote visibility",
     "voteSecret": "Secret",
     "votePublic": "Public",
+    "voteVisibilityHelp": "Secret: votes stay hidden until the tally. Public: the table can see ballots as they come in.",
     "tieBreak": "Tribunal ties",
     "tieNoBurn": "No elimination",
     "tieRunoff": "Runoff",
+    "tieBreakHelp": "No elimination: a tie means nobody is burned. Runoff: only the tied players are voted on again.",
     "discussionSec": "Discussion (seconds)",
     "tribunalSec": "Tribunal (seconds)",
-    "nightTurnSec": "Night micro-turn (seconds)",
+    "nightTurnSec": "Night wake (seconds)",
+    "nightTurnHelp": "Default length of each night wake when the role has no longer wake window. Everyone waits the full window so finishing early does not leak who acted.",
     "dawnSec": "Dawn (seconds)",
     "ballotSec": "Ballot reveal (seconds)",
-    "assistedMult": "ASSISTED timer multiplier",
+    "assistedMult": "Master timer multiplier",
+    "assistedMultHelp": "In Master-assisted mode, soft timers can run longer (duration × this factor) so the Master has time to narrate. Automated mode ignores this.",
     "allowLateJoin": "Allow late join",
+    "allowLateJoinHelp": "If on, players may still enter the PIN after the game started — they join as spectators without a dealt role.",
+    "modeHelp": "Automated: the server calls night turns on a timer. Assisted: a Master advances turns and sees the God-View.",
     "export": "Export",
     "import": "Import",
     "presetExported": "Preset exported.",
@@ -63,22 +104,171 @@
     "qrUnavailable": "QR unavailable",
     "lanError": "No reachable LAN address. Connect the Host to Wi‑Fi or set an advertise override — localhost is not allowed.",
     "copyLink": "Copy link",
-    "linkCopied": "Link copied."
+    "linkCopied": "Link copied.",
+    "recommendedTitle": "Recommended games",
+    "recommendedHelp": "One-tap decks for {{count}} players at the table (excluding a non-playing Master). Presets run from 6 to 24 seats.",
+    "recommendedSuggested": "Suggested for this table",
+    "recommendedApply": "Apply this setup",
+    "recommendedApplied": "Recommended deck applied. You can still edit roles below.",
+    "recommendedPlayers": "{{min}} players",
+    "recommendedGeneric": "{{min}} players",
+    "recommendedBalanceHint": "Shadow hunters stay ~20–28% of seats; Custode + investigator always present; heavy specials only on large tables.",
+    "recommended": {
+      "table6": { "title": "6 — Small night", "blurb": "1 Shadow · Custode · Oracle" },
+      "table7": { "title": "7 — Twin shadows", "blurb": "2 Shadows enter" },
+      "table8": { "title": "8 — Classic village", "blurb": "Balanced starter" },
+      "table9": { "title": "9 — Echo", "blurb": "Adds Eco" },
+      "table10": { "title": "10 — First shield", "blurb": "Bulwark joins" },
+      "table11": { "title": "11 — Moonseer", "blurb": "Lunavista opens" },
+      "table12": { "title": "12 — Threshold", "blurb": "3 hunters · Soglia" },
+      "table13": { "title": "13 — Wanderer", "blurb": "Solo Vagabondo" },
+      "table14": { "title": "14 — Night judge", "blurb": "Giudice della Notte" },
+      "table15": { "title": "15 — Simulacrum", "blurb": "Hidden Shadow ally" },
+      "table16": { "title": "16 — Cleaver", "blurb": "Village Mannaia" },
+      "table17": { "title": "17 — Raven", "blurb": "Corvo whispers" },
+      "table18": { "title": "18 — Bonds", "blurb": "Legame pair" },
+      "table19": { "title": "19 — Twilight", "blurb": "Crepuscolo dual face" },
+      "table20": { "title": "20 — Talon", "blurb": "Artiglio even nights" },
+      "table21": { "title": "21 — Vigil", "blurb": "Veglia watches" },
+      "table22": { "title": "22 — Cold flame", "blurb": "Fiamma Fredda night 1" },
+      "table23": { "title": "23 — Crossroads", "blurb": "Crocevia joins" },
+      "table24": { "title": "24 — Full night", "blurb": "Invoker + full cast" }
+    }
   },
   "roles": {
+    "guideTitle": "Roles in this game",
+    "guideHelp": "These are the roles in the current Nocturna deck — name, faction, and what they do under the night.",
+    "guideEditableHint": "You can edit names and descriptions before dealing. Players will see your text when they reveal their role.",
+    "roleName": "Role name",
+    "roleDescription": "Description",
+    "roleDescriptionHint": "Shown on the hold-to-reveal card. Keep it clear for new players.",
     "editorTitle": "Call order",
-    "editorHelp": "Lower priority = called first. Frequency and action type stay data-driven — no role is hard-coded in the engine.",
-    "frequency": "Frequency",
-    "action": "Action",
-    "copies": "Copies",
-    "maskingMs": "Masking (ms)",
-    "raisePriority": "Raise priority",
-    "lowerPriority": "Lower priority",
-    "cittadino": { "name": "Citizen", "description": "Village resident with no night power. Wins by eliminating all Shadows." },
-    "guardia": { "name": "Guard", "description": "Each night may protect one living player. The protected player survives one attack." },
-    "oracolo": { "name": "Oracle", "description": "Investigate a player to learn whether they belong to the Village or the Shadows." },
-    "ombra": { "name": "Shadow", "description": "Village infiltrator. At night the Shadows vote together on a victim." },
-    "vagabondo": { "name": "Wanderer", "description": "Solo: wins by being the last survivor." }
+    "editorHelp": "Lower call-order number = woken earlier in the night. “When they wake” and “What they do” drive the engine — nothing is hard-coded per role name.",
+    "frequency": "When they wake",
+    "action": "What they do",
+    "copies": "Copies in deck",
+    "maskingMs": "Wake length (ms)",
+    "callOrderShort": "call order {{n}}",
+    "callOrderHelpLabel": "About call order",
+    "priorityShort": "call order {{n}}",
+    "raisePriority": "Call earlier",
+    "lowerPriority": "Call later",
+    "raisePriorityHelp": "Use the arrows to swap call order with the neighbour above or below. Lower number wakes first.",
+    "lowerPriorityHelp": "Use the arrows to swap call order with the neighbour above or below. Lower number wakes first.",
+    "copiesHelp": "How many of this role are dealt. Set to 0 to leave it out of the deal (still listed for editing).",
+    "maskingHelp": "Minimum time this wake stays open (milliseconds). The turn never ends early when someone taps Confirm — that stops neighbours from guessing who acted by timing.",
+    "frequencyLabel": {
+      "EVERY_NIGHT": "Every night",
+      "FIRST_NIGHT_ONLY": "First night only",
+      "ODD_NIGHTS": "Odd nights",
+      "EVEN_NIGHTS": "Even nights",
+      "ON_TRIGGER": "Only when called"
+    },
+    "frequencyHelp": {
+      "EVERY_NIGHT": "Woken on every night of the game.",
+      "FIRST_NIGHT_ONLY": "Woken only on night 1, then sleeps for the rest of the game.",
+      "ODD_NIGHTS": "Woken on nights 1, 3, 5… (odd night numbers).",
+      "EVEN_NIGHTS": "Woken on nights 2, 4, 6… (even night numbers).",
+      "ON_TRIGGER": "Not woken automatically. Only enters the night queue if the Master forces a call (advanced)."
+    },
+    "actionLabel": {
+      "NONE": "No night action",
+      "SINGLE_TARGET": "Choose one player",
+      "FACTION_VOTE": "Shadows hunt together",
+      "INSPECT_TARGET": "Investigate one player",
+      "PASSIVE_INFO": "Listen only"
+    },
+    "actionHelp": {
+      "NONE": "This role is never woken for an action (typical Citizen).",
+      "SINGLE_TARGET": "The awake player picks one living target (e.g. protect or strike).",
+      "FACTION_VOTE": "All living members of this faction vote together on one victim (Shadow hunt).",
+      "INSPECT_TARGET": "Pick one player; the result is private intel at dawn.",
+      "PASSIVE_INFO": "Shows a short message only — no target to choose."
+    },
+    "cittadino": {
+      "name": "Citizen",
+      "description": "Sleeps with no night power. Wins when the last Shadow falls at dawn or under the tribunal."
+    },
+    "guardia": {
+      "name": "Keeper",
+      "description": "Each night chooses one living player to shelter. If Shadows strike them, they survive until dawn."
+    },
+    "baluardo": {
+      "name": "Bulwark",
+      "description": "Only on the first night may raise a shield over one living player, then returns to silence."
+    },
+    "oracolo": {
+      "name": "Oracle",
+      "description": "At night investigates one living player and at dawn learns Village or Shadows."
+    },
+    "lunavista": {
+      "name": "Moonseer",
+      "description": "On odd moon nights peers at one living player and at dawn learns their exact role."
+    },
+    "veglia": {
+      "name": "Vigil",
+      "description": "Does not act — only receives a short warning in the silence. Wins with the Village."
+    },
+    "eco": {
+      "name": "Echo",
+      "description": "On even nights receives a warning that echoes who fell at the day’s tribunal."
+    },
+    "legame": {
+      "name": "Bond",
+      "description": "Two linked souls: only on the first night they recognise each other in the dark. Wins with the Village. Always add two copies."
+    },
+    "ombra": {
+      "name": "Shadow",
+      "description": "Village infiltrator. At night the Shadows vote together on a victim to erase by dawn."
+    },
+    "caccianotte": {
+      "name": "Night-hunter",
+      "description": "Hunts with the pack: votes with the other Shadows on the night’s prey."
+    },
+    "artiglio": {
+      "name": "Talon",
+      "description": "On even nights strikes alone, beyond the pack vote: chooses one living player to cut down."
+    },
+    "simulacro": {
+      "name": "Simulacrum",
+      "description": "Looks like a Citizen and never wakes, but wins with the Shadows — without knowing who they are."
+    },
+    "vagabondo": {
+      "name": "Wanderer",
+      "description": "Lone wanderer: wins only if they remain the last one alive under the moon."
+    },
+    "crocevia": {
+      "name": "Crossroads",
+      "description": "Neutral at the fork: wins only as the last survivor. On odd nights listens without acting."
+    },
+    "invocatore": {
+      "name": "Invoker",
+      "description": "Does not wake alone: only if the Master calls them in the night do they receive a warning."
+    },
+    "giudice_notte": {
+      "name": "Night Arbiter",
+      "description": "Each night investigates one living player and at dawn learns their exact role — the verdict stays private."
+    },
+    "mannaia": {
+      "name": "Cleaver",
+      "description": "On odd nights may cut down one living player for the Village. A mistake is an eternal accusation."
+    },
+    "crepuscolo": {
+      "name": "Twilight",
+      "description": "Wears two faces: by day looks like a Citizen, but wins only as last survivor. On the first night alone listens to both silences — then walks alone."
+    },
+    "soglia": {
+      "name": "Threshold",
+      "description": "On even nights investigates one living player and at dawn learns only Village or Shadows."
+    },
+    "corvo": {
+      "name": "Raven",
+      "description": "Each night receives a warning: mark a name in silence to bring into dawn accusations — no forced vote power."
+    },
+    "fiamma_fredda": {
+      "name": "Cold Flame",
+      "description": "Only on the first night may strike alone, before the pack even moves."
+    }
   },
   "factions": {
     "VILLAGE": "Village",

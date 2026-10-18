@@ -7,6 +7,18 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+### Added
+- Lobby **Regolamento** (Host + players): phases, night stealth, tribunal, modes — IT/EN, original Nocturna copy.
+- Lobby **Roles in this game** guide: name, faction, editable description before deal (IT/EN).
+- **Partite consigliate**: one-tap decks for **every seat count 6–24** (~1 Shadow hunter per 5 seats).
+- Expanded original night-world role catalog (Custode, Lunavista, Eco, Legame, Caccianotte, Artiglio, Simulacro, Giudice della Notte, Mannaia, Crepuscolo, Soglia, Corvo, Fiamma Fredda, …).
+- Tap-to-open FieldHelp (mobile-friendly) for Frequency, Action, and opaque Host settings.
+
+### Changed
+- Role schedule selects no longer show raw enums (`EVERY_NIGHT`, `SINGLE_TARGET`, …) — translated labels + help in IT/EN.
+- Friendly “call order” wording (no “priority” jargon in UI).
+- Master night stepper shows localized action labels; role reveal prefers Host-edited deck text.
+
 ### Fixed
 - Windows portable Host: embed `@nocturna/shared` is now a real copy (not a Unix symlink), so the Electron child no longer dies with `MODULE_NOT_FOUND` and a opaque “Health check timeout”.
 - Host: bind always `0.0.0.0`; advertise override is QR/join only; health polls `127.0.0.1`; Refresh/lang no longer restart the server; clearer spawn/stderr/port-in-use errors.

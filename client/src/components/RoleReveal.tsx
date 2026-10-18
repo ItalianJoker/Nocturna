@@ -4,11 +4,26 @@
 
 import { useRef, useState } from 'react';
 import {
+  Axe,
+  Bell,
+  Bird,
+  Drama,
+  Ear,
   Eye,
+  Fingerprint,
+  Flame,
+  Gavel,
+  GitBranch,
   Moon,
+  ScanSearch,
   Shield,
+  ShieldCheck,
   Sparkles,
+  Split,
+  Sword,
+  UserX,
   Users,
+  Wand2,
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +36,24 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 const ICONS: Record<string, LucideIcon> = {
   Users,
   Shield,
+  ShieldCheck,
   Eye,
+  ScanSearch,
+  Bell,
   Moon,
+  UserX,
+  Sword,
+  Drama,
   Sparkles,
+  GitBranch,
+  Ear,
+  Wand2,
+  Gavel,
+  Axe,
+  Split,
+  Fingerprint,
+  Bird,
+  Flame,
 };
 
 interface RoleRevealProps {
@@ -42,14 +72,17 @@ export function RoleReveal({ view }: RoleRevealProps) {
   }
 
   const roleId = view.you.roleId;
-  const roleName = roleId
-    ? t(`roles.${roleId}.name`, { defaultValue: view.you.roleName ?? '' })
-    : view.you.roleName;
-  const roleDesc = roleId
-    ? t(`roles.${roleId}.description`, {
-        defaultValue: view.you.roleDescription ?? '',
-      })
-    : view.you.roleDescription;
+  // Prefer Host-edited deck text from the server; fall back to locale catalog.
+  const roleName =
+    view.you.roleName?.trim() ||
+    (roleId
+      ? t(`roles.${roleId}.name`, { defaultValue: '' })
+      : '');
+  const roleDesc =
+    view.you.roleDescription?.trim() ||
+    (roleId
+      ? t(`roles.${roleId}.description`, { defaultValue: '' })
+      : '');
   const factionLabel = view.you.faction
     ? t(`factions.${view.you.faction}`)
     : '';

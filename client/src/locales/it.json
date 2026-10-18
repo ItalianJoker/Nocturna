@@ -6,6 +6,11 @@
     "connecting": "Connessione…",
     "language": "Lingua"
   },
+  "help": {
+    "show": "Cosa significa?",
+    "hide": "Nascondi aiuto",
+    "aboutOption": "Info su questa scelta"
+  },
   "welcome": {
     "blurb": "Deduzione sociale mobile-first. Notte stealth, narratore automatico o Master assistito — senza segnali che tradiscono chi è sveglio.",
     "tabJoin": "Entra",
@@ -18,6 +23,34 @@
     "wait": "Attendi…",
     "createFailed": "Creazione fallita",
     "joinFailed": "Ingresso fallita"
+  },
+  "rules": {
+    "title": "Regolamento",
+    "blurb": "Come si svolge una notte di Nocturna — per tutti al tavolo.",
+    "goal": {
+      "title": "Obiettivo",
+      "body": "Due fazioni principali sotto la stessa luna.\n\n• Il Villaggio vince quando non resta più nessuna Ombra.\n• Le Ombre vincono quando eguagliano o superano i Villici vivi.\n• Solitari / Neutrali possono vincere da soli se restano gli ultimi in vita.\n\nNon mostrare mai la carta ruolo. Mentire è lecito; far vedere lo schermo privato no."
+    },
+    "phases": {
+      "title": "Fasi",
+      "body": "Un ciclo passa per:\n\n1. Notte — occhi chiusi; prima protezioni e indagini, poi la caccia delle Ombre, poi altri risvegli — tutto in silenzio sul telefono.\n2. Risveglio — si annunciano eventuali caduti.\n3. Discussione — si parla, si accusa, ci si difende.\n4. Tribunale — si vota per eliminare chi si crede un’Ombra (i pareggi seguono le impostazioni Host).\n\nPoi il ciclo ripete fino alla vittoria di una parte. Come regola pratica: circa un cacciatore Ombra ogni cinque posti mantiene la tensione senza sconfitta automatica."
+    },
+    "night": {
+      "title": "Notte stealth",
+      "body": "In Notte ogni telefono resta scuro. Nessuno deve capire chi è sveglio da luce, suono o vibrazione.\n\nSe l’aptica è attiva, tutti i dispositivi vibrano allo stesso modo. L’audio ambiente (modalità automatica) è lo stesso loop per tutti.\n\nConfermare in anticipo non chiude il risveglio: il timer maschera chi ha agito per primo."
+    },
+    "day": {
+      "title": "Giorno e tribunale",
+      "body": "All’alba si rivelano le vittime della notte (se ci sono).\n\nIn Discussione si argomenta liberamente. In Tribunale si vota. I pareggi possono non eliminare nessuno o andare al ballottaggio — lo sceglie l’Host prima di iniziare.\n\nI voti possono essere segreti o palesi, a seconda delle impostazioni."
+    },
+    "modes": {
+      "title": "Modalità di gioco",
+      "body": "• Narratore automatico — il server chiama ogni risveglio notturno col timer. Tutti sono giocatori.\n• Master assistito — una persona narra con la plancia God-View, può mettere in pausa, forzare l’avanzamento e annullare azioni. Il Master non riceve un ruolo e non conta per le condizioni di vittoria."
+    },
+    "stealth": {
+      "title": "Etiquette al tavolo",
+      "body": "Tieni il telefono a faccia in giù quando “dormi”. Non spiare i vicini. I morti non rivelano il ruolo. Il QR / link di join dell’Host è sempre un indirizzo LAN — mai localhost sui telefoni dei giocatori."
+    }
   },
   "lobby": {
     "title": "Lobby · PIN",
@@ -36,20 +69,28 @@
     "haptics": "Aptica",
     "hapticsNone": "Nessuna vibrazione (default)",
     "hapticsHeartbeat": "Heartbeat universale",
-    "ambientAudio": "Audio ambiente (AUTOMATED)",
+    "hapticsHelp": "Di default i telefoni restano silenziosi. Il “heartbeat universale” fa vibrare tutti allo stesso modo quando cambia un turno di notte — così nessuno deduce chi è sveglio dalla vibrazione.",
+    "ambientAudio": "Audio ambiente (notti automatiche)",
+    "ambientAudioHelp": "Loop ambientale soft su tutti i dispositivi solo nelle notti automatiche — stesso suono per tutti, senza indizi di ruolo.",
     "voteVisibility": "Visibilità voti",
     "voteSecret": "Segreta",
     "votePublic": "Palese",
+    "voteVisibilityHelp": "Segreta: i voti restano nascosti fino allo spoglio. Palese: il tavolo vede le schede man mano che arrivano.",
     "tieBreak": "Pareggi tribunale",
     "tieNoBurn": "Nessun rogo",
     "tieRunoff": "Ballottaggio",
+    "tieBreakHelp": "Nessun rogo: in caso di pareggio nessuno viene eliminato. Ballottaggio: si vota di nuovo solo tra i pari.",
     "discussionSec": "Discussione (secondi)",
     "tribunalSec": "Tribunale (secondi)",
-    "nightTurnSec": "Micro-turno notte (secondi)",
+    "nightTurnSec": "Risveglio notte (secondi)",
+    "nightTurnHelp": "Durata di default di ogni risveglio notturno se il ruolo non ha una finestra più lunga. Tutti aspettano la finestra intera così chi conferma prima non tradisce chi ha agito.",
     "dawnSec": "Risveglio (secondi)",
     "ballotSec": "Spoglio (secondi)",
-    "assistedMult": "Moltiplicatore timer ASSISTED",
+    "assistedMult": "Moltiplicatore timer Master",
+    "assistedMultHelp": "In modalità Master assistito i timer soft possono durare di più (durata × questo fattore) così il Master ha tempo di narrare. La modalità automatica lo ignora.",
     "allowLateJoin": "Ingressi tardivi",
+    "allowLateJoinHelp": "Se attivo, si può ancora entrare col PIN dopo l’inizio — si uniscono come spettatori, senza ruolo distribuito.",
+    "modeHelp": "Automatico: il server chiama i turni di notte col timer. Assistito: un Master avanza i turni e vede la God-View.",
     "export": "Esporta",
     "import": "Importa",
     "presetExported": "Preset esportato.",
@@ -63,22 +104,171 @@
     "qrUnavailable": "QR non disponibile",
     "lanError": "Nessun indirizzo LAN raggiungibile. Collega il Host al Wi‑Fi o imposta un override di advertise — localhost non è ammesso.",
     "copyLink": "Copia link",
-    "linkCopied": "Link copiato."
+    "linkCopied": "Link copiato.",
+    "recommendedTitle": "Partite consigliate",
+    "recommendedHelp": "Mazzi con un tocco per {{count}} giocatori al tavolo (escluso un Master che non gioca). Preset da 6 a 24 posti.",
+    "recommendedSuggested": "Consigliata per questo tavolo",
+    "recommendedApply": "Applica questo setup",
+    "recommendedApplied": "Mazzo consigliato applicato. Puoi ancora modificare i ruoli sotto.",
+    "recommendedPlayers": "{{min}} giocatori",
+    "recommendedGeneric": "{{min}} giocatori",
+    "recommendedBalanceHint": "I cacciatori Ombra restano ~20–28% dei posti; sempre Custode + investigatore; i ruoli pesanti solo sui tavoli grandi.",
+    "recommended": {
+      "table6": { "title": "6 — Notte piccola", "blurb": "1 Ombra · Custode · Oracolo" },
+      "table7": { "title": "7 — Ombre gemelle", "blurb": "2 Ombre entrano" },
+      "table8": { "title": "8 — Villaggio classico", "blurb": "Setup bilanciato" },
+      "table9": { "title": "9 — Eco", "blurb": "Arriva Eco" },
+      "table10": { "title": "10 — Primo scudo", "blurb": "Entra il Baluardo" },
+      "table11": { "title": "11 — Lunavista", "blurb": "Si apre la luna" },
+      "table12": { "title": "12 — Soglia", "blurb": "3 cacciatori · Soglia" },
+      "table13": { "title": "13 — Vagabondo", "blurb": "Solitario al tavolo" },
+      "table14": { "title": "14 — Giudice", "blurb": "Giudice della Notte" },
+      "table15": { "title": "15 — Simulacro", "blurb": "Alleato nascosto delle Ombre" },
+      "table16": { "title": "16 — Mannaia", "blurb": "Mannaia del Villaggio" },
+      "table17": { "title": "17 — Corvo", "blurb": "Il Corvo sussurra" },
+      "table18": { "title": "18 — Legami", "blurb": "Coppia di Legame" },
+      "table19": { "title": "19 — Crepuscolo", "blurb": "Doppio volto" },
+      "table20": { "title": "20 — Artiglio", "blurb": "Artiglio nelle notti pari" },
+      "table21": { "title": "21 — Veglia", "blurb": "La Veglia osserva" },
+      "table22": { "title": "22 — Fiamma fredda", "blurb": "Colpo nella notte 1" },
+      "table23": { "title": "23 — Crocevia", "blurb": "Entra Crocevia" },
+      "table24": { "title": "24 — Notte piena", "blurb": "Invocatore + cast completo" }
+    }
   },
   "roles": {
+    "guideTitle": "Ruoli in questa partita",
+    "guideHelp": "Ecco i ruoli del mazzo Nocturna — nome, fazione e cosa fanno nella notte.",
+    "guideEditableHint": "Puoi modificare nomi e descrizioni prima di distribuire. I giocatori vedranno il tuo testo quando scoprono il ruolo.",
+    "roleName": "Nome ruolo",
+    "roleDescription": "Descrizione",
+    "roleDescriptionHint": "Compare sulla carta “tieni premuto”. Scrivi in modo chiaro per chi gioca la prima volta.",
     "editorTitle": "Ordine di chiamata",
-    "editorHelp": "Priorità bassa = chiamato prima. Frequenza e tipo azione restano data-driven — nessun ruolo è cablato nel motore.",
-    "frequency": "Frequenza",
-    "action": "Azione",
-    "copies": "Copie",
-    "maskingMs": "Masking (ms)",
-    "raisePriority": "Alza priorità",
-    "lowerPriority": "Abbassa priorità",
-    "cittadino": { "name": "Cittadino", "description": "Abitante del villaggio senza poteri notturni. Vince eliminando tutte le Ombre." },
-    "guardia": { "name": "Guardia", "description": "Ogni notte può proteggere un giocatore vivente. Il protetto sopravvive a un attacco." },
-    "oracolo": { "name": "Oracolo", "description": "Indaga un giocatore per scoprire se appartiene al Villaggio o alle Ombre." },
-    "ombra": { "name": "Ombra", "description": "Infiltrato del villaggio. Di notte le Ombre votano insieme una vittima." },
-    "vagabondo": { "name": "Vagabondo", "description": "Solitario: vince se rimane l'unico sopravvissuto a fine partita." }
+    "editorHelp": "Numero di chiamata più basso = svegliato prima nella notte. “Quando si sveglia” e “Cosa fa” guidano il motore — nulla è cablato sul nome del ruolo.",
+    "frequency": "Quando si sveglia",
+    "action": "Cosa fa",
+    "copies": "Copie nel mazzo",
+    "maskingMs": "Durata risveglio (ms)",
+    "callOrderShort": "chiamata {{n}}",
+    "callOrderHelpLabel": "Info sull’ordine di chiamata",
+    "priorityShort": "chiamata {{n}}",
+    "raisePriority": "Chiama prima",
+    "lowerPriority": "Chiama dopo",
+    "raisePriorityHelp": "Usa le frecce per scambiare l’ordine con il vicino sopra o sotto. Il numero più basso si sveglia per primo.",
+    "lowerPriorityHelp": "Usa le frecce per scambiare l’ordine con il vicino sopra o sotto. Il numero più basso si sveglia per primo.",
+    "copiesHelp": "Quante copie di questo ruolo vengono distribuite. Imposta 0 per escluderlo dalla distribuzione (resta in elenco per modificarlo).",
+    "maskingHelp": "Tempo minimo in cui il risveglio resta aperto (millisecondi). Il turno non finisce prima se qualcuno preme Conferma — così i vicini non indovinano chi ha agito dai tempi.",
+    "frequencyLabel": {
+      "EVERY_NIGHT": "Ogni notte",
+      "FIRST_NIGHT_ONLY": "Solo la prima notte",
+      "ODD_NIGHTS": "Notti dispari",
+      "EVEN_NIGHTS": "Notti pari",
+      "ON_TRIGGER": "Solo se chiamato"
+    },
+    "frequencyHelp": {
+      "EVERY_NIGHT": "Si sveglia in ogni notte della partita.",
+      "FIRST_NIGHT_ONLY": "Si sveglia solo nella notte 1, poi dorme per il resto della partita.",
+      "ODD_NIGHTS": "Si sveglia nelle notti 1, 3, 5… (numeri dispari).",
+      "EVEN_NIGHTS": "Si sveglia nelle notti 2, 4, 6… (numeri pari).",
+      "ON_TRIGGER": "Non entra in coda da solo. Viene chiamato solo se il Master lo forza (avanzato)."
+    },
+    "actionLabel": {
+      "NONE": "Nessuna azione notturna",
+      "SINGLE_TARGET": "Scegli un giocatore",
+      "FACTION_VOTE": "Le Ombre cacciano insieme",
+      "INSPECT_TARGET": "Indaga un giocatore",
+      "PASSIVE_INFO": "Solo ascolto"
+    },
+    "actionHelp": {
+      "NONE": "Questo ruolo non viene mai svegliato per agire (tipico Cittadino).",
+      "SINGLE_TARGET": "Il giocatore sveglio sceglie un vivo (es. proteggere o colpire).",
+      "FACTION_VOTE": "Tutti i vivi di questa fazione votano insieme una vittima (caccia delle Ombre).",
+      "INSPECT_TARGET": "Scegli un giocatore; il risultato è info privata all’alba.",
+      "PASSIVE_INFO": "Mostra solo un breve messaggio — nessun bersaglio da scegliere."
+    },
+    "cittadino": {
+      "name": "Cittadino",
+      "description": "Dorme senza poteri. Vince quando l’ultima Ombra cade sotto il tribunale o all’alba."
+    },
+    "guardia": {
+      "name": "Custode",
+      "description": "Ogni notte sceglie un vivo da mettere al riparo: se le Ombre lo colpiscono, sopravvive all’alba."
+    },
+    "baluardo": {
+      "name": "Baluardo",
+      "description": "Solo nella prima notte può erigere uno scudo su un vivo. Poi torna nel silenzio."
+    },
+    "oracolo": {
+      "name": "Oracolo",
+      "description": "Nella notte indaga un vivo e all’alba sa se appartiene al Villaggio o alle Ombre."
+    },
+    "lunavista": {
+      "name": "Lunavista",
+      "description": "Nelle notti di luna dispari scruta un vivo e all’alba ne conosce il ruolo esatto."
+    },
+    "veglia": {
+      "name": "Veglia",
+      "description": "Non agisce: nel silenzio riceve solo un breve monito. Vince col Villaggio."
+    },
+    "eco": {
+      "name": "Eco",
+      "description": "Nelle notti pari riceve un monito: riecheggia chi è caduto al tribunale del giorno."
+    },
+    "legame": {
+      "name": "Legame",
+      "description": "Due anime legate: solo la prima notte si riconoscono nel buio. Vince col Villaggio. Aggiungi sempre due copie."
+    },
+    "ombra": {
+      "name": "Ombra",
+      "description": "Infiltrato del villaggio. Di notte le Ombre votano insieme una vittima da far sparire all’alba."
+    },
+    "caccianotte": {
+      "name": "Caccianotte",
+      "description": "Caccia col branco: vota con le altre Ombre la preda della notte."
+    },
+    "artiglio": {
+      "name": "Artiglio",
+      "description": "Nelle notti pari colpisce da solo, oltre al voto del branco: sceglie un vivo da abbattere."
+    },
+    "simulacro": {
+      "name": "Simulacro",
+      "description": "Sembra un Cittadino e non si sveglia, ma vince con le Ombre — senza sapere chi sono."
+    },
+    "vagabondo": {
+      "name": "Vagabondo",
+      "description": "Errante solitario: vince soltanto se resta l’ultimo vivo sotto la luna."
+    },
+    "crocevia": {
+      "name": "Crocevia",
+      "description": "Neutrale al bivio: vince solo se resta ultimo. Nelle notti dispari ascolta, senza agire."
+    },
+    "invocatore": {
+      "name": "Invocatore",
+      "description": "Non si sveglia da solo: solo se il Master lo chiama nella notte riceve un monito."
+    },
+    "giudice_notte": {
+      "name": "Giudice della Notte",
+      "description": "Ogni notte indaga un vivo e all’alba ne conosce il ruolo esatto — il verdetto resta privato."
+    },
+    "mannaia": {
+      "name": "Mannaia",
+      "description": "Nelle notti dispari può abbattere un vivo in nome del Villaggio. Un errore è un’accusa eterna."
+    },
+    "crepuscolo": {
+      "name": "Crepuscolo",
+      "description": "Porta due volti: di giorno sembra un Cittadino, ma vince solo restando ultimo vivo. Nella prima notte ascolta entrambi i silenzi — poi cammina solo."
+    },
+    "soglia": {
+      "name": "Soglia",
+      "description": "Nelle notti pari indaga un vivo e all’alba sa solo se è Villaggio o Ombre."
+    },
+    "corvo": {
+      "name": "Corvo",
+      "description": "Ogni notte riceve un monito: segna mentalmente un nome da portare all’alba nelle accuse — senza poteri di voto forzato."
+    },
+    "fiamma_fredda": {
+      "name": "Fiamma Fredda",
+      "description": "Solo la prima notte può colpire da sola, prima ancora che il branco si muova."
+    }
   },
   "factions": {
     "VILLAGE": "Villaggio",

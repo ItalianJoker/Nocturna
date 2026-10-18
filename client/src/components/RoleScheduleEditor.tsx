@@ -16,6 +16,7 @@ import type {
   WakeFrequency,
   ActionType,
 } from '@nocturna/shared';
+import { FieldHelp } from './FieldHelp';
 
 const FREQUENCIES: WakeFrequency[] = [
   'EVERY_NIGHT',
@@ -101,117 +102,144 @@ export function RoleScheduleEditor({
         {t('roles.editorHelp')}
       </p>
       <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
-        {sorted.map((role) => (
-          <li
-            key={role.id}
-            className="rounded-xl border border-white/5 bg-black/30 p-3"
-          >
-            <div className="flex items-start justify-between gap-2">
-              <div className="min-w-0">
-                <p
-                  className="truncate font-medium"
-                  style={{ color: role.colorHex }}
-                >
-                  {role.name}
-                </p>
-                <p className="text-xs text-stone-500">
-                  {t(`factions.${role.faction}`, { defaultValue: role.faction })} ·{' '}
-                  {role.wakeSchedule.priority}
-                </p>
+        {sorted.map((role) => {
+          const freqHelpId = `freq-help-${role.id}`;
+          const actionHelpId = `action-help-${role.id}`;
+          const maskHelpId = `mask-help-${role.id}`;
+          const copiesHelpId = `copies-help-${role.id}`;
+          return (
+            <li
+              key={role.id}
+              className="rounded-xl border border-white/5 bg-black/30 p-3"
+            >
+              <div className="flex items-start justify-between gap-2">
+                <div className="min-w-0">
+                  <p
+                    className="truncate font-medium"
+                    style={{ color: role.colorHex }}
+                  >
+                    {role.name}
+                  </p>
+                  <p className="text-xs text-stone-500">
+                    {t(`factions.${role.faction}`, { defaultValue: role.faction })} ·{' '}
+                    {t('roles.callOrderShort', {
+                      n: role.wakeSchedule.priority,
+                    })}
+                  </p>
+                </div>
+                <div className="flex shrink-0 gap-1">
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
+                    onClick={() => move(role.id, -1)}
+                    aria-label={t('roles.raisePriority')}
+                  >
+                    <ArrowUp className="h-4 w-4" />
+                  </button>
+                  <button
+                    type="button"
+                    disabled={disabled}
+                    className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
+                    onClick={() => move(role.id, 1)}
+                    aria-label={t('roles.lowerPriority')}
+                  >
+                    <ArrowDown className="h-4 w-4" />
+                  </button>
+                </div>
               </div>
-              <div className="flex shrink-0 gap-1">
-                <button
-                  type="button"
-                  disabled={disabled}
-                  className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
-                  onClick={() => move(role.id, -1)}
-                  aria-label={t('roles.raisePriority')}
-                >
-                  <ArrowUp className="h-4 w-4" />
-                </button>
-                <button
-                  type="button"
-                  disabled={disabled}
-                  className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
-                  onClick={() => move(role.id, 1)}
-                  aria-label={t('roles.lowerPriority')}
-                >
-                  <ArrowDown className="h-4 w-4" />
-                </button>
+              <FieldHelp label={t('roles.callOrderHelpLabel')}>
+                {t('roles.raisePriorityHelp')}
+              </FieldHelp>
+              <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[380px]:grid-cols-2 xl:grid-cols-4">
+                <label className="flex flex-col gap-1 text-stone-400">
+                  {t('roles.frequency')}
+                  <select
+                    disabled={disabled}
+                    className="field-input"
+                    value={role.wakeSchedule.frequency}
+                    aria-describedby={freqHelpId}
+                    onChange={(e) =>
+                      update(role.id, {
+                        frequency: e.target.value as WakeFrequency,
+                      })
+                    }
+                  >
+                    {FREQUENCIES.map((f) => (
+                      <option key={f} value={f}>
+                        {t(`roles.frequencyLabel.${f}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <FieldHelp id={freqHelpId} label={t('help.aboutOption')}>
+                    {t(`roles.frequencyHelp.${role.wakeSchedule.frequency}`)}
+                  </FieldHelp>
+                </label>
+                <label className="flex flex-col gap-1 text-stone-400">
+                  {t('roles.action')}
+                  <select
+                    disabled={disabled}
+                    className="field-input"
+                    value={role.wakeSchedule.actionType}
+                    aria-describedby={actionHelpId}
+                    onChange={(e) =>
+                      update(role.id, {
+                        actionType: e.target.value as ActionType,
+                      })
+                    }
+                  >
+                    {ACTIONS.map((a) => (
+                      <option key={a} value={a}>
+                        {t(`roles.actionLabel.${a}`)}
+                      </option>
+                    ))}
+                  </select>
+                  <FieldHelp id={actionHelpId} label={t('help.aboutOption')}>
+                    {t(`roles.actionHelp.${role.wakeSchedule.actionType}`)}
+                  </FieldHelp>
+                </label>
+                <label className="flex flex-col gap-1 text-stone-400">
+                  {t('roles.copies')}
+                  <input
+                    type="number"
+                    min={0}
+                    max={20}
+                    disabled={disabled}
+                    className="field-input"
+                    value={role.count}
+                    aria-describedby={copiesHelpId}
+                    onChange={(e) =>
+                      update(role.id, { count: Number(e.target.value) })
+                    }
+                  />
+                  <FieldHelp id={copiesHelpId} label={t('help.aboutOption')}>
+                    {t('roles.copiesHelp')}
+                  </FieldHelp>
+                </label>
+                <label className="flex flex-col gap-1 text-stone-400">
+                  {t('roles.maskingMs')}
+                  <input
+                    type="number"
+                    min={0}
+                    step={1000}
+                    disabled={disabled}
+                    className="field-input"
+                    value={role.wakeSchedule.timeMaskingDuration}
+                    aria-describedby={maskHelpId}
+                    onChange={(e) =>
+                      update(role.id, {
+                        timeMaskingDuration: Number(e.target.value),
+                      })
+                    }
+                  />
+                  <FieldHelp id={maskHelpId} label={t('help.aboutOption')}>
+                    {t('roles.maskingHelp')}
+                  </FieldHelp>
+                </label>
               </div>
-            </div>
-            <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[380px]:grid-cols-2 xl:grid-cols-4">
-              <label className="flex flex-col gap-1 text-stone-400">
-                {t('roles.frequency')}
-                <select
-                  disabled={disabled}
-                  className="field-input"
-                  value={role.wakeSchedule.frequency}
-                  onChange={(e) =>
-                    update(role.id, {
-                      frequency: e.target.value as WakeFrequency,
-                    })
-                  }
-                >
-                  {FREQUENCIES.map((f) => (
-                    <option key={f} value={f}>
-                      {f}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1 text-stone-400">
-                {t('roles.action')}
-                <select
-                  disabled={disabled}
-                  className="field-input"
-                  value={role.wakeSchedule.actionType}
-                  onChange={(e) =>
-                    update(role.id, {
-                      actionType: e.target.value as ActionType,
-                    })
-                  }
-                >
-                  {ACTIONS.map((a) => (
-                    <option key={a} value={a}>
-                      {a}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label className="flex flex-col gap-1 text-stone-400">
-                {t('roles.copies')}
-                <input
-                  type="number"
-                  min={0}
-                  max={20}
-                  disabled={disabled}
-                  className="field-input"
-                  value={role.count}
-                  onChange={(e) =>
-                    update(role.id, { count: Number(e.target.value) })
-                  }
-                />
-              </label>
-              <label className="flex flex-col gap-1 text-stone-400">
-                {t('roles.maskingMs')}
-                <input
-                  type="number"
-                  min={0}
-                  step={1000}
-                  disabled={disabled}
-                  className="field-input"
-                  value={role.wakeSchedule.timeMaskingDuration}
-                  onChange={(e) =>
-                    update(role.id, {
-                      timeMaskingDuration: Number(e.target.value),
-                    })
-                  }
-                />
-              </label>
-            </div>
-          </li>
-        ))}
+            </li>
+          );
+        })}
       </ul>
     </section>
   );
