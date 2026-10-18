@@ -4,6 +4,7 @@ contextBridge.exposeInMainWorld('nocturnaHost', {
   getStatus: () => ipcRenderer.invoke('get-status'),
   getSettings: () => ipcRenderer.invoke('get-settings'),
   saveSettings: (settings) => ipcRenderer.invoke('save-settings', settings),
+  restartServer: () => ipcRenderer.invoke('restart-server'),
   openUrl: (url) => ipcRenderer.invoke('open-url', url),
   quit: () => ipcRenderer.invoke('quit-host'),
   onStatus: (cb) => {

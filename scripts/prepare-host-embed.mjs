@@ -2,6 +2,11 @@
  * Prepares host/embed with production server + SPA + pruned deps
  * for Electron portable packaging (Win / Linux AppImage / macOS).
  *
+ * Critical: `@nocturna/shared` must be a **real directory copy**, not a
+ * symlink. Cross-building on Linux for Windows portable leaves Unix
+ * symlinks that Windows cannot resolve → child exits on MODULE_NOT_FOUND
+ * → Host UI shows only "Health check timeout".
+ *
  * Run after `npm run build`.
  */
 import fs from 'node:fs';
@@ -25,6 +30,44 @@ function assertExists(p, label) {
   if (!fs.existsSync(p)) {
     throw new Error(`Missing ${label}: ${p}. Run npm run build first.`);
   }
+}
+
+/**
+ * Replace any symlink under `dir` with a real recursive copy of its target.
+ * Safe for packaging to Windows from a Linux/macOS builder.
+ */
+function materializeSymlinks(dir) {
+  if (!fs.existsSync(dir)) return;
+  const walk = (current) => {
+    let entries;
+    try {
+      entries = fs.readdirSync(current, { withFileTypes: true });
+    } catch {
+      return;
+    }
+    for (const ent of entries) {
+      const full = path.join(current, ent.name);
+      let stat;
+      try {
+        stat = fs.lstatSync(full);
+      } catch {
+        continue;
+      }
+      if (stat.isSymbolicLink()) {
+        const target = fs.realpathSync(full);
+        const targetStat = fs.statSync(target);
+        fs.rmSync(full, { recursive: true, force: true });
+        if (targetStat.isDirectory()) {
+          fs.cpSync(target, full, { recursive: true, dereference: true });
+        } else {
+          fs.copyFileSync(target, full);
+        }
+        continue;
+      }
+      if (stat.isDirectory()) walk(full);
+    }
+  };
+  walk(dir);
 }
 
 assertExists(path.join(root, 'client/dist/index.html'), 'client build');
@@ -72,15 +115,34 @@ fs.writeFileSync(
 );
 
 console.log('Installing production deps into host/embed …');
-execSync('npm install --omit=dev --no-package-lock', {
+// --install-links: pack file: deps as copies (not symlinks) when npm supports it.
+execSync('npm install --omit=dev --no-package-lock --install-links', {
   cwd: embed,
   stdio: 'inherit',
 });
+
+// Belt-and-suspenders for older npm / residual links.
+materializeSymlinks(path.join(embed, 'node_modules'));
+
+const sharedNm = path.join(embed, 'node_modules', '@nocturna', 'shared');
+if (!fs.existsSync(sharedNm)) {
+  throw new Error(`embed missing ${sharedNm} after install`);
+}
+if (fs.lstatSync(sharedNm).isSymbolicLink()) {
+  throw new Error(
+    `@nocturna/shared is still a symlink at ${sharedNm} — Windows portable would fail`,
+  );
+}
+assertExists(
+  path.join(sharedNm, 'dist', 'index.js'),
+  'embed @nocturna/shared dist',
+);
 
 fs.writeFileSync(
   path.join(embed, 'run.mjs'),
   `/**
  * Portable entry — used by Electron via ELECTRON_RUN_AS_NODE.
+ * Bind HOST is always 0.0.0.0; ADVERTISE_HOST is QR/join only (never bind).
  */
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
