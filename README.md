@@ -117,7 +117,37 @@ npm run dist:host:win     # portable .exe + zip
 npm run dist:host:mac     # .zip (.app, unsigned when cross-built)
 ```
 
+Or download the same artifacts from the [GitHub Release `v1.0.0`](https://github.com/ItalianJoker/Nocturna/releases/tag/v1.0.0).
+
 Host console: set **port** + optional **advertise override**, then Apply & restart. Only LAN URLs are listed for players; “Open on Host computer” may use loopback on the Host PC only.
+
+#### macOS — app non verificata / unsigned build (Gatekeeper)
+
+Il zip Release (`Nocturna-1.0.0-mac-x64.zip`) contiene un `.app` **non firmato e non notarizzato** (build cross-compilata su Linux). Gatekeeper lo blocca di default. Limite attuale: artifact **x64 only** — su Apple Silicon serve Rosetta 2 (o una rebuild locale `--arm64`).
+
+**IT — passi consigliati**
+
+1. Scarica `Nocturna-1.0.0-mac-x64.zip` dalla Release e decomprimilo (Ottieni `Nocturna.app`).
+2. (Consigliato) togli la quarantine da Terminale, nella cartella dell’app:
+   ```bash
+   xattr -dr com.apple.quarantine /percorso/a/Nocturna.app
+   ```
+3. **Non** fare doppio-click se macOS rifiuta l’apertura. Invece: click destro (o Control-click) su `Nocturna.app` → **Apri** → conferma **Apri** nel dialogo.
+4. Se ancora bloccata: **Impostazioni di Sistema → Privacy e sicurezza** → cerca il messaggio su Nocturna → **Apri comunque**.
+5. Su Apple Silicon: installa/abilita **Rosetta** se richiesto alla prima esecuzione dell’binario x64.
+6. Avvia Nocturna Host → imposta **porta** / override LAN se serve → **Applica e riavvia**. I telefoni usano solo l’URL LAN del QR, mai `localhost`.
+
+**EN — recommended steps**
+
+1. Download `Nocturna-1.0.0-mac-x64.zip` from the Release and unzip (`Nocturna.app`).
+2. (Recommended) clear quarantine in Terminal from the app’s folder:
+   ```bash
+   xattr -dr com.apple.quarantine /path/to/Nocturna.app
+   ```
+3. Do **not** rely on double-click if macOS refuses. Instead: right-click (Control-click) `Nocturna.app` → **Open** → confirm **Open**.
+4. If still blocked: **System Settings → Privacy & Security** → find the Nocturna message → **Open Anyway**.
+5. On Apple Silicon: install/enable **Rosetta** if prompted for the x64 binary.
+6. Launch Nocturna Host → set **port** / LAN advertise override if needed → **Apply & restart**. Phones use the LAN QR URL only — never `localhost`.
 
 ### 3) npm (dev / Node on Host PC)
 
