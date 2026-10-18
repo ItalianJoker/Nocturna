@@ -122,7 +122,7 @@ export function RoleScheduleEditor({
                   </p>
                   <p className="text-xs text-stone-500">
                     {t(`factions.${role.faction}`, { defaultValue: role.faction })} ·{' '}
-                    {t('roles.priorityShort', {
+                    {t('roles.callOrderShort', {
                       n: role.wakeSchedule.priority,
                     })}
                   </p>
@@ -134,7 +134,6 @@ export function RoleScheduleEditor({
                     className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
                     onClick={() => move(role.id, -1)}
                     aria-label={t('roles.raisePriority')}
-                    title={t('roles.raisePriorityHelp')}
                   >
                     <ArrowUp className="h-4 w-4" />
                   </button>
@@ -144,12 +143,14 @@ export function RoleScheduleEditor({
                     className="touch-target rounded-lg border border-white/10 p-2 text-stone-400"
                     onClick={() => move(role.id, 1)}
                     aria-label={t('roles.lowerPriority')}
-                    title={t('roles.lowerPriorityHelp')}
                   >
                     <ArrowDown className="h-4 w-4" />
                   </button>
                 </div>
               </div>
+              <FieldHelp label={t('roles.callOrderHelpLabel')}>
+                {t('roles.raisePriorityHelp')}
+              </FieldHelp>
               <div className="mt-3 grid grid-cols-1 gap-2 text-xs min-[380px]:grid-cols-2 xl:grid-cols-4">
                 <label className="flex flex-col gap-1 text-stone-400">
                   {t('roles.frequency')}
@@ -158,7 +159,6 @@ export function RoleScheduleEditor({
                     className="field-input"
                     value={role.wakeSchedule.frequency}
                     aria-describedby={freqHelpId}
-                    title={t(`roles.frequencyHelp.${role.wakeSchedule.frequency}`)}
                     onChange={(e) =>
                       update(role.id, {
                         frequency: e.target.value as WakeFrequency,
@@ -166,16 +166,12 @@ export function RoleScheduleEditor({
                     }
                   >
                     {FREQUENCIES.map((f) => (
-                      <option
-                        key={f}
-                        value={f}
-                        title={t(`roles.frequencyHelp.${f}`)}
-                      >
+                      <option key={f} value={f}>
                         {t(`roles.frequencyLabel.${f}`)}
                       </option>
                     ))}
                   </select>
-                  <FieldHelp id={freqHelpId}>
+                  <FieldHelp id={freqHelpId} label={t('help.aboutOption')}>
                     {t(`roles.frequencyHelp.${role.wakeSchedule.frequency}`)}
                   </FieldHelp>
                 </label>
@@ -186,7 +182,6 @@ export function RoleScheduleEditor({
                     className="field-input"
                     value={role.wakeSchedule.actionType}
                     aria-describedby={actionHelpId}
-                    title={t(`roles.actionHelp.${role.wakeSchedule.actionType}`)}
                     onChange={(e) =>
                       update(role.id, {
                         actionType: e.target.value as ActionType,
@@ -194,16 +189,12 @@ export function RoleScheduleEditor({
                     }
                   >
                     {ACTIONS.map((a) => (
-                      <option
-                        key={a}
-                        value={a}
-                        title={t(`roles.actionHelp.${a}`)}
-                      >
+                      <option key={a} value={a}>
                         {t(`roles.actionLabel.${a}`)}
                       </option>
                     ))}
                   </select>
-                  <FieldHelp id={actionHelpId}>
+                  <FieldHelp id={actionHelpId} label={t('help.aboutOption')}>
                     {t(`roles.actionHelp.${role.wakeSchedule.actionType}`)}
                   </FieldHelp>
                 </label>
@@ -217,12 +208,13 @@ export function RoleScheduleEditor({
                     className="field-input"
                     value={role.count}
                     aria-describedby={copiesHelpId}
-                    title={t('roles.copiesHelp')}
                     onChange={(e) =>
                       update(role.id, { count: Number(e.target.value) })
                     }
                   />
-                  <FieldHelp id={copiesHelpId}>{t('roles.copiesHelp')}</FieldHelp>
+                  <FieldHelp id={copiesHelpId} label={t('help.aboutOption')}>
+                    {t('roles.copiesHelp')}
+                  </FieldHelp>
                 </label>
                 <label className="flex flex-col gap-1 text-stone-400">
                   {t('roles.maskingMs')}
@@ -234,14 +226,15 @@ export function RoleScheduleEditor({
                     className="field-input"
                     value={role.wakeSchedule.timeMaskingDuration}
                     aria-describedby={maskHelpId}
-                    title={t('roles.maskingHelp')}
                     onChange={(e) =>
                       update(role.id, {
                         timeMaskingDuration: Number(e.target.value),
                       })
                     }
                   />
-                  <FieldHelp id={maskHelpId}>{t('roles.maskingHelp')}</FieldHelp>
+                  <FieldHelp id={maskHelpId} label={t('help.aboutOption')}>
+                    {t('roles.maskingHelp')}
+                  </FieldHelp>
                 </label>
               </div>
             </li>

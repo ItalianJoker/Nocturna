@@ -8,11 +8,15 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 ## [Unreleased]
 
 ### Added
+- Lobby **Regolamento** (Host + players): phases, night stealth, tribunal, modes — IT/EN, original Nocturna copy.
 - Lobby **Roles in this game** guide: name, faction, editable description before deal (IT/EN).
-- Plain-language tooltips / help under Frequency, Action, masking, copies, and opaque Host settings.
+- **Partite consigliate**: one-tap decks by player count (6–16).
+- Expanded original night-world role catalog (Custode, Lunavista, Eco, Legame, Caccianotte, Artiglio, Simulacro, …).
+- Tap-to-open FieldHelp (mobile-friendly) for Frequency, Action, and opaque Host settings.
 
 ### Changed
 - Role schedule selects no longer show raw enums (`EVERY_NIGHT`, `SINGLE_TARGET`, …) — translated labels + help in IT/EN.
+- Friendly “call order” wording (no “priority” jargon in UI).
 - Master night stepper shows localized action labels; role reveal prefers Host-edited deck text.
 
 ### Fixed

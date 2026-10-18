@@ -19,6 +19,8 @@ import {
 import { getSocket } from '../lib/socket';
 import { RoleScheduleEditor } from './RoleScheduleEditor';
 import { RolesDeckGuide } from './RolesDeckGuide';
+import { RecommendedSetups } from './RecommendedSetups';
+import { LobbyRules } from './LobbyRules';
 import { FieldHelp } from './FieldHelp';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAppStore } from '../store/appStore';
@@ -409,6 +411,8 @@ function LobbyRoom() {
               ))}
             </ul>
           </section>
+
+          <LobbyRules />
         </div>
 
         {isHost && (
@@ -441,7 +445,9 @@ function LobbyRoom() {
                     <option value="AUTOMATED">{t('lobby.modeAutomated')}</option>
                     <option value="ASSISTED">{t('lobby.modeAssisted')}</option>
                   </select>
-                  <FieldHelp id="help-mode">{t('lobby.modeHelp')}</FieldHelp>
+                  <FieldHelp id="help-mode" label={t('help.aboutOption')}>
+                    {t('lobby.modeHelp')}
+                  </FieldHelp>
                 </label>
                 {view.settings.moderatorMode === 'ASSISTED' && (
                   <label className="flex flex-col gap-1 text-xs text-stone-400">
@@ -657,6 +663,16 @@ function LobbyRoom() {
 
         {isHost && draftDeck && (
           <div className="desktop-split__full space-y-4">
+            <RecommendedSetups
+              playerCount={view.players.filter((p) => !p.isMaster).length}
+              onApply={(deck) => {
+                saveDeck(localizeRoleDeck(deck, t));
+                setToast({
+                  level: 'info',
+                  message: t('lobby.recommendedApplied'),
+                });
+              }}
+            />
             <RolesDeckGuide
               deck={draftDeck}
               editable

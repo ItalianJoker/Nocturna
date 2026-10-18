@@ -4,11 +4,20 @@
 
 import { useRef, useState } from 'react';
 import {
+  Bell,
+  Drama,
+  Ear,
   Eye,
+  GitBranch,
   Moon,
+  ScanSearch,
   Shield,
+  ShieldCheck,
   Sparkles,
+  Sword,
+  UserX,
   Users,
+  Wand2,
   type LucideIcon,
 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +30,18 @@ import { LanguageSwitcher } from './LanguageSwitcher';
 const ICONS: Record<string, LucideIcon> = {
   Users,
   Shield,
+  ShieldCheck,
   Eye,
+  ScanSearch,
+  Bell,
   Moon,
+  UserX,
+  Sword,
+  Drama,
   Sparkles,
+  GitBranch,
+  Ear,
+  Wand2,
 };
 
 interface RoleRevealProps {
