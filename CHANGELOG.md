@@ -10,8 +10,8 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 ### Added
 - Lobby **Regolamento** (Host + players): phases, night stealth, tribunal, modes — IT/EN, original Nocturna copy.
 - Lobby **Roles in this game** guide: name, faction, editable description before deal (IT/EN).
-- **Partite consigliate**: one-tap decks by player count (6–16).
-- Expanded original night-world role catalog (Custode, Lunavista, Eco, Legame, Caccianotte, Artiglio, Simulacro, …).
+- **Partite consigliate**: one-tap decks for **every seat count 6–24** (~1 Shadow hunter per 5 seats).
+- Expanded original night-world role catalog (Custode, Lunavista, Eco, Legame, Caccianotte, Artiglio, Simulacro, Giudice della Notte, Mannaia, Crepuscolo, Soglia, Corvo, Fiamma Fredda, …).
 - Tap-to-open FieldHelp (mobile-friendly) for Frequency, Action, and opaque Host settings.
 
 ### Changed
