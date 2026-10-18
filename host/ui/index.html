@@ -132,9 +132,16 @@
         color: #78716c;
         white-space: pre-wrap;
       }
-      .warn { color: #fda4af; font-size: 0.85rem; margin-top: 0.5rem; }
+      .warn {
+        color: #fda4af;
+        font-size: 0.85rem;
+        margin-top: 0.5rem;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
       .lang { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
       .lang button { flex: 1; }
+      button:disabled { opacity: 0.45; cursor: not-allowed; }
     </style>
   </head>
   <body>
@@ -189,30 +196,32 @@
           eyebrow: 'Host console',
           blurb: 'Avvia il server sulla LAN. I giocatori aprono l’URL dal telefono — mai localhost nel QR.',
           starting: 'Avvio…',
+          restarting: 'Riavvio server…',
           running: (p) => 'Server attivo · porta ' + p,
           stopped: 'Server spento',
           open: 'Apri sul computer Host',
-          refresh: 'Aggiorna',
+          refresh: 'Aggiorna stato',
           quit: 'Chiudi Host',
           apply: 'Applica e riavvia',
           port: 'Porta',
           adv: 'Override advertise (IP/host)',
-          hint: 'Opzionale. Mai localhost / 127.0.0.1.',
+          hint: 'Opzionale. Mai localhost / 127.0.0.1. Non è l’indirizzo di bind (il server ascolta su 0.0.0.0).',
           noLan: 'Nessun IP LAN — collega il Wi‑Fi o imposta un override.',
         },
         en: {
           eyebrow: 'Host console',
           blurb: 'Start the LAN server. Players open the URL on their phones — never localhost in the QR.',
           starting: 'Starting…',
+          restarting: 'Restarting server…',
           running: (p) => 'Server running · port ' + p,
           stopped: 'Server stopped',
           open: 'Open on Host computer',
-          refresh: 'Refresh',
+          refresh: 'Refresh status',
           quit: 'Quit Host',
           apply: 'Apply & restart',
           port: 'Port',
           adv: 'Advertise override (IP/host)',
-          hint: 'Optional. Never localhost / 127.0.0.1.',
+          hint: 'Optional. Never localhost / 127.0.0.1. Not the bind address (server listens on 0.0.0.0).',
           noLan: 'No LAN IP — connect Wi‑Fi or set an override.',
         },
       };
@@ -246,6 +255,13 @@
         applyBtn.textContent = c.apply;
       }
 
+      function setBusy(busy) {
+        applyBtn.disabled = busy;
+        refreshBtn.disabled = busy;
+        portInput.disabled = busy;
+        advInput.disabled = busy;
+      }
+
       function render(status) {
         const c = copy[lang];
         if (!status) return;
@@ -267,19 +283,26 @@
             if (u !== status.advertiseBase) list.push(u);
           }
           urlsEl.innerHTML = list.map((u) => '<li>' + u + '</li>').join('');
+          // Soft LAN warning only (not duplicated crash text).
           if (status.error) {
             warnEl.hidden = false;
             warnEl.textContent = status.error;
           } else {
             warnEl.hidden = true;
+            warnEl.textContent = '';
           }
         } else {
           dot.className = 'dot err';
-          statusText.textContent = status.error || c.stopped;
+          statusText.textContent = c.stopped;
           openBtn.disabled = true;
           urlsEl.innerHTML = '';
-          warnEl.hidden = !status.error;
-          warnEl.textContent = status.error || '';
+          if (status.error) {
+            warnEl.hidden = false;
+            warnEl.textContent = status.error;
+          } else {
+            warnEl.hidden = true;
+            warnEl.textContent = '';
+          }
         }
       }
 
@@ -303,23 +326,35 @@
           lang = btn.getAttribute('data-lang');
           applyLang();
           const settings = await window.nocturnaHost.getSettings();
-          await window.nocturnaHost.saveSettings({ ...settings, lang });
-          refresh();
+          // Lang-only save does not restart the server (main process).
+          const res = await window.nocturnaHost.saveSettings({
+            ...settings,
+            lang,
+          });
+          if (res?.status) render(res.status);
+          else refresh();
         });
       });
 
       applyBtn.addEventListener('click', async () => {
-        const res = await window.nocturnaHost.saveSettings({
-          port: Number(portInput.value),
-          advertiseHost: advInput.value.trim(),
-          lang,
-        });
-        if (!res?.ok) {
-          warnEl.hidden = false;
-          warnEl.textContent = res?.error || 'Failed';
-          return;
+        setBusy(true);
+        statusText.textContent = copy[lang].restarting;
+        try {
+          const res = await window.nocturnaHost.saveSettings({
+            port: Number(portInput.value),
+            advertiseHost: advInput.value.trim(),
+            lang,
+          });
+          if (res?.status) render(res.status);
+          if (!res?.ok) {
+            warnEl.hidden = false;
+            warnEl.textContent = res?.error || 'Failed';
+          }
+        } catch (e) {
+          render({ running: false, error: String(e) });
+        } finally {
+          setBusy(false);
         }
-        render(res.status);
       });
 
       openBtn.addEventListener('click', () => {
@@ -330,6 +365,7 @@
       quitBtn.addEventListener('click', () => window.nocturnaHost.quit());
 
       applyLang();
+      statusText.textContent = copy[lang].starting;
       refresh();
     </script>
   </body>

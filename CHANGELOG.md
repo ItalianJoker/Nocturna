@@ -7,6 +7,10 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 
 ## [Unreleased]
 
+### Fixed
+- Windows portable Host: embed `@nocturna/shared` is now a real copy (not a Unix symlink), so the Electron child no longer dies with `MODULE_NOT_FOUND` and a opaque “Health check timeout”.
+- Host: bind always `0.0.0.0`; advertise override is QR/join only; health polls `127.0.0.1`; Refresh/lang no longer restart the server; clearer spawn/stderr/port-in-use errors.
+
 ### Performance
 - None (Safety-First pass: no invasive hot-path changes).
 
