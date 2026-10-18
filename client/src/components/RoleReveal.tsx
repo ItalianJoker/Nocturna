@@ -4,16 +4,22 @@
 
 import { useRef, useState } from 'react';
 import {
+  Axe,
   Bell,
+  Bird,
   Drama,
   Ear,
   Eye,
+  Fingerprint,
+  Flame,
+  Gavel,
   GitBranch,
   Moon,
   ScanSearch,
   Shield,
   ShieldCheck,
   Sparkles,
+  Split,
   Sword,
   UserX,
   Users,
@@ -42,6 +48,12 @@ const ICONS: Record<string, LucideIcon> = {
   GitBranch,
   Ear,
   Wand2,
+  Gavel,
+  Axe,
+  Split,
+  Fingerprint,
+  Bird,
+  Flame,
 };
 
 interface RoleRevealProps {

@@ -33,7 +33,7 @@
     },
     "phases": {
       "title": "Fasi",
-      "body": "Un ciclo passa per:\n\n1. Notte — occhi chiusi; alcuni ruoli si svegliano in silenzio sul telefono.\n2. Risveglio — si annunciano eventuali caduti.\n3. Discussione — si parla, si accusa, ci si difende.\n4. Tribunale — si vota per eliminare chi si crede un’Ombra.\n\nPoi il ciclo ripete fino alla vittoria di una parte."
+      "body": "Un ciclo passa per:\n\n1. Notte — occhi chiusi; prima protezioni e indagini, poi la caccia delle Ombre, poi altri risvegli — tutto in silenzio sul telefono.\n2. Risveglio — si annunciano eventuali caduti.\n3. Discussione — si parla, si accusa, ci si difende.\n4. Tribunale — si vota per eliminare chi si crede un’Ombra (i pareggi seguono le impostazioni Host).\n\nPoi il ciclo ripete fino alla vittoria di una parte. Come regola pratica: circa un cacciatore Ombra ogni cinque posti mantiene la tensione senza sconfitta automatica."
     },
     "night": {
       "title": "Notte stealth",
@@ -106,41 +106,33 @@
     "copyLink": "Copia link",
     "linkCopied": "Link copiato.",
     "recommendedTitle": "Partite consigliate",
-    "recommendedHelp": "Mazzi con un tocco, calibrati su circa {{count}} giocatori al tavolo (escluso un Master che non gioca).",
+    "recommendedHelp": "Mazzi con un tocco per {{count}} giocatori al tavolo (escluso un Master che non gioca). Preset da 6 a 24 posti.",
     "recommendedSuggested": "Consigliata per questo tavolo",
     "recommendedApply": "Applica questo setup",
     "recommendedApplied": "Mazzo consigliato applicato. Puoi ancora modificare i ruoli sotto.",
-    "recommendedPlayers": "{{min}}–{{max}} giocatori",
-    "recommendedGeneric": "Tavolo da {{min}}–{{max}}",
+    "recommendedPlayers": "{{min}} giocatori",
+    "recommendedGeneric": "{{min}} giocatori",
+    "recommendedBalanceHint": "I cacciatori Ombra restano ~20–28% dei posti; sempre Custode + investigatore; i ruoli pesanti solo sui tavoli grandi.",
     "recommended": {
-      "table6": {
-        "title": "Notte piccola (6)",
-        "blurb": "Una Ombra, Custode + Oracolo — corta e tesa."
-      },
-      "table7": {
-        "title": "Sette sotto la luna",
-        "blurb": "Due Ombre entrano nel villaggio."
-      },
-      "table8": {
-        "title": "Villaggio classico (8)",
-        "blurb": "Setup bilanciato per la maggior parte dei tavoli."
-      },
-      "table9": {
-        "title": "Eco e vagabondo (9)",
-        "blurb": "Aggiunge Eco e un Vagabondo solitario."
-      },
-      "table10": {
-        "title": "Scudo della prima notte (10)",
-        "blurb": "Il Baluardo si unisce al Custode."
-      },
-      "table12": {
-        "title": "Notte fonda (11–12)",
-        "blurb": "Lunavista, Eco, Caccianotte, Vagabondo."
-      },
-      "table14": {
-        "title": "Lunga veglia (13–16)",
-        "blurb": "Cast Nocturna completo — Simulacro, Artiglio, Baluardo."
-      }
+      "table6": { "title": "6 — Notte piccola", "blurb": "1 Ombra · Custode · Oracolo" },
+      "table7": { "title": "7 — Ombre gemelle", "blurb": "2 Ombre entrano" },
+      "table8": { "title": "8 — Villaggio classico", "blurb": "Setup bilanciato" },
+      "table9": { "title": "9 — Eco", "blurb": "Arriva Eco" },
+      "table10": { "title": "10 — Primo scudo", "blurb": "Entra il Baluardo" },
+      "table11": { "title": "11 — Lunavista", "blurb": "Si apre la luna" },
+      "table12": { "title": "12 — Soglia", "blurb": "3 cacciatori · Soglia" },
+      "table13": { "title": "13 — Vagabondo", "blurb": "Solitario al tavolo" },
+      "table14": { "title": "14 — Giudice", "blurb": "Giudice della Notte" },
+      "table15": { "title": "15 — Simulacro", "blurb": "Alleato nascosto delle Ombre" },
+      "table16": { "title": "16 — Mannaia", "blurb": "Mannaia del Villaggio" },
+      "table17": { "title": "17 — Corvo", "blurb": "Il Corvo sussurra" },
+      "table18": { "title": "18 — Legami", "blurb": "Coppia di Legame" },
+      "table19": { "title": "19 — Crepuscolo", "blurb": "Doppio volto" },
+      "table20": { "title": "20 — Artiglio", "blurb": "Artiglio nelle notti pari" },
+      "table21": { "title": "21 — Veglia", "blurb": "La Veglia osserva" },
+      "table22": { "title": "22 — Fiamma fredda", "blurb": "Colpo nella notte 1" },
+      "table23": { "title": "23 — Crocevia", "blurb": "Entra Crocevia" },
+      "table24": { "title": "24 — Notte piena", "blurb": "Invocatore + cast completo" }
     }
   },
   "roles": {
@@ -252,6 +244,30 @@
     "invocatore": {
       "name": "Invocatore",
       "description": "Non si sveglia da solo: solo se il Master lo chiama nella notte riceve un monito."
+    },
+    "giudice_notte": {
+      "name": "Giudice della Notte",
+      "description": "Ogni notte indaga un vivo e all’alba ne conosce il ruolo esatto — il verdetto resta privato."
+    },
+    "mannaia": {
+      "name": "Mannaia",
+      "description": "Nelle notti dispari può abbattere un vivo in nome del Villaggio. Un errore è un’accusa eterna."
+    },
+    "crepuscolo": {
+      "name": "Crepuscolo",
+      "description": "Porta due volti: di giorno sembra un Cittadino, ma vince solo restando ultimo vivo. Nella prima notte ascolta entrambi i silenzi — poi cammina solo."
+    },
+    "soglia": {
+      "name": "Soglia",
+      "description": "Nelle notti pari indaga un vivo e all’alba sa solo se è Villaggio o Ombre."
+    },
+    "corvo": {
+      "name": "Corvo",
+      "description": "Ogni notte riceve un monito: segna mentalmente un nome da portare all’alba nelle accuse — senza poteri di voto forzato."
+    },
+    "fiamma_fredda": {
+      "name": "Fiamma Fredda",
+      "description": "Solo la prima notte può colpire da sola, prima ancora che il branco si muova."
     }
   },
   "factions": {

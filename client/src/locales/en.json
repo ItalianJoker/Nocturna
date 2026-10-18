@@ -33,7 +33,7 @@
     },
     "phases": {
       "title": "Phases",
-      "body": "A round moves through:\n\n1. Night — eyes closed; some roles wake in silence on their phones.\n2. Dawn — the fallen (if any) are announced.\n3. Discussion — talk, accuse, defend.\n4. Tribunal — vote to eliminate someone you believe is a Shadow.\n\nThen the cycle repeats until a side wins."
+      "body": "A round moves through:\n\n1. Night — eyes closed; protectors and investigators wake first, then the Shadows hunt, then other night roles — all in silence on their phones.\n2. Dawn — the fallen (if any) are announced.\n3. Discussion — talk, accuse, defend.\n4. Tribunal — vote to eliminate someone you believe is a Shadow (ties follow Host settings).\n\nThen the cycle repeats until a side wins. As a rule of thumb, about one Shadow hunter per five seats keeps the table tense without an auto-loss."
     },
     "night": {
       "title": "Night stealth",
@@ -106,41 +106,33 @@
     "copyLink": "Copy link",
     "linkCopied": "Link copied.",
     "recommendedTitle": "Recommended games",
-    "recommendedHelp": "One-tap decks sized for about {{count}} players at the table (excluding a non-playing Master).",
+    "recommendedHelp": "One-tap decks for {{count}} players at the table (excluding a non-playing Master). Presets run from 6 to 24 seats.",
     "recommendedSuggested": "Suggested for this table",
     "recommendedApply": "Apply this setup",
     "recommendedApplied": "Recommended deck applied. You can still edit roles below.",
-    "recommendedPlayers": "{{min}}–{{max}} players",
-    "recommendedGeneric": "Table of {{min}}–{{max}}",
+    "recommendedPlayers": "{{min}} players",
+    "recommendedGeneric": "{{min}} players",
+    "recommendedBalanceHint": "Shadow hunters stay ~20–28% of seats; Custode + investigator always present; heavy specials only on large tables.",
     "recommended": {
-      "table6": {
-        "title": "Small night (6)",
-        "blurb": "One Shadow, Custode + Oracle — tight and tense."
-      },
-      "table7": {
-        "title": "Seven under the moon",
-        "blurb": "Two Shadows enter the village."
-      },
-      "table8": {
-        "title": "Classic village (8)",
-        "blurb": "Balanced starter for most tables."
-      },
-      "table9": {
-        "title": "Echo & wanderer (9)",
-        "blurb": "Adds Eco and a solo Wanderer."
-      },
-      "table10": {
-        "title": "First-night shield (10)",
-        "blurb": "Baluardo joins Custode under a larger moon."
-      },
-      "table12": {
-        "title": "Deep night (11–12)",
-        "blurb": "Lunavista, Eco, Night-hunter, Wanderer."
-      },
-      "table14": {
-        "title": "Long vigil (13–16)",
-        "blurb": "Full Nocturna cast — Simulacrum, Talon, Bulwark."
-      }
+      "table6": { "title": "6 — Small night", "blurb": "1 Shadow · Custode · Oracle" },
+      "table7": { "title": "7 — Twin shadows", "blurb": "2 Shadows enter" },
+      "table8": { "title": "8 — Classic village", "blurb": "Balanced starter" },
+      "table9": { "title": "9 — Echo", "blurb": "Adds Eco" },
+      "table10": { "title": "10 — First shield", "blurb": "Bulwark joins" },
+      "table11": { "title": "11 — Moonseer", "blurb": "Lunavista opens" },
+      "table12": { "title": "12 — Threshold", "blurb": "3 hunters · Soglia" },
+      "table13": { "title": "13 — Wanderer", "blurb": "Solo Vagabondo" },
+      "table14": { "title": "14 — Night judge", "blurb": "Giudice della Notte" },
+      "table15": { "title": "15 — Simulacrum", "blurb": "Hidden Shadow ally" },
+      "table16": { "title": "16 — Cleaver", "blurb": "Village Mannaia" },
+      "table17": { "title": "17 — Raven", "blurb": "Corvo whispers" },
+      "table18": { "title": "18 — Bonds", "blurb": "Legame pair" },
+      "table19": { "title": "19 — Twilight", "blurb": "Crepuscolo dual face" },
+      "table20": { "title": "20 — Talon", "blurb": "Artiglio even nights" },
+      "table21": { "title": "21 — Vigil", "blurb": "Veglia watches" },
+      "table22": { "title": "22 — Cold flame", "blurb": "Fiamma Fredda night 1" },
+      "table23": { "title": "23 — Crossroads", "blurb": "Crocevia joins" },
+      "table24": { "title": "24 — Full night", "blurb": "Invoker + full cast" }
     }
   },
   "roles": {
@@ -252,6 +244,30 @@
     "invocatore": {
       "name": "Invoker",
       "description": "Does not wake alone: only if the Master calls them in the night do they receive a warning."
+    },
+    "giudice_notte": {
+      "name": "Night Arbiter",
+      "description": "Each night investigates one living player and at dawn learns their exact role — the verdict stays private."
+    },
+    "mannaia": {
+      "name": "Cleaver",
+      "description": "On odd nights may cut down one living player for the Village. A mistake is an eternal accusation."
+    },
+    "crepuscolo": {
+      "name": "Twilight",
+      "description": "Wears two faces: by day looks like a Citizen, but wins only as last survivor. On the first night alone listens to both silences — then walks alone."
+    },
+    "soglia": {
+      "name": "Threshold",
+      "description": "On even nights investigates one living player and at dawn learns only Village or Shadows."
+    },
+    "corvo": {
+      "name": "Raven",
+      "description": "Each night receives a warning: mark a name in silence to bring into dawn accusations — no forced vote power."
+    },
+    "fiamma_fredda": {
+      "name": "Cold Flame",
+      "description": "Only on the first night may strike alone, before the pack even moves."
     }
   },
   "factions": {

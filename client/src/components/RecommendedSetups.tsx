@@ -52,8 +52,11 @@ export function RecommendedSetups({
           {t('lobby.recommendedTitle')}
         </h2>
       </header>
-      <p className="mb-3 fluid-body text-[var(--nocturna-mist)]">
+      <p className="mb-2 fluid-body text-[var(--nocturna-mist)]">
         {t('lobby.recommendedHelp', { count: playerCount })}
+      </p>
+      <p className="mb-3 text-xs leading-snug text-stone-500">
+        {t('lobby.recommendedBalanceHint')}
       </p>
 
       <div className="mb-3 rounded-xl border border-[var(--nocturna-amber)]/30 bg-[var(--nocturna-amber)]/10 p-3">
