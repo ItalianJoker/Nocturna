@@ -19,7 +19,7 @@ UI: **Italiano / English** (selettore in app).
 
 1. **Host — avvio server:**
    - Docker: `docker compose up --build` (opz. `NOCTURNA_PORT=8080`)
-   - App portatile Nocturna (imposta porta / override IP se serve)
+   - App portatile Nocturna (imposta porta / override IP se serve). Su **macOS** l’`.app` della Release è non firmata: vedi README § *macOS — app non verificata / unsigned build (Gatekeeper)*.
    - Oppure `npm run build && npm start` / `--port` / `--advertise-host`
 2. Sul **telefono** apri l’URL **LAN** dal QR (stessa Wi‑Fi) — non usare l’indirizzo loopback del PC Host.
 3. Host: *Crea stanza* → PIN 6 cifre + QR.
@@ -57,7 +57,7 @@ Come prima: hold-to-reveal, notte OLED stealth, risveglio / discussione / tribun
 
 ### 1. Joining
 
-1. Start Host (Docker / portable app / `npm start` with optional `--advertise-host`).
+1. Start Host (Docker / portable app / `npm start` with optional `--advertise-host`). On **macOS**, the Release `.app` is unsigned — follow README § *macOS — app non verificata / unsigned build (Gatekeeper)*.
 2. Phones open the **LAN** URL from the QR on the same Wi‑Fi — not the Host PC loopback URL.
 3. Host creates room → PIN + QR; players join. No Node on phones.
 
