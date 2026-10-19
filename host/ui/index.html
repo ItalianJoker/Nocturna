@@ -315,14 +315,9 @@
         }
       }
 
-      window.nocturnaHost.onStatus(render);
-      window.nocturnaHost.onLog((line) => {
-        logEl.textContent += line + '\n';
-        logEl.scrollTop = logEl.scrollHeight;
-      });
-
       document.querySelectorAll('[data-lang]').forEach((btn) => {
         btn.addEventListener('click', async () => {
+          if (!window.nocturnaHost) return;
           lang = btn.getAttribute('data-lang');
           applyLang();
           const settings = await window.nocturnaHost.getSettings();
@@ -337,6 +332,7 @@
       });
 
       applyBtn.addEventListener('click', async () => {
+        if (!window.nocturnaHost) return;
         setBusy(true);
         statusText.textContent = copy[lang].restarting;
         try {
@@ -359,14 +355,34 @@
 
       openBtn.addEventListener('click', () => {
         // Host PC may open loopback admin URL; phones use advertiseBase / QR.
-        if (localAdminUrl) window.nocturnaHost.openUrl(localAdminUrl);
+        if (localAdminUrl && window.nocturnaHost) {
+          window.nocturnaHost.openUrl(localAdminUrl);
+        }
       });
-      refreshBtn.addEventListener('click', refresh);
-      quitBtn.addEventListener('click', () => window.nocturnaHost.quit());
+      refreshBtn.addEventListener('click', () => {
+        if (window.nocturnaHost) refresh();
+      });
+      quitBtn.addEventListener('click', () => {
+        if (window.nocturnaHost) window.nocturnaHost.quit();
+      });
 
       applyLang();
       statusText.textContent = copy[lang].starting;
-      refresh();
+
+      if (!window.nocturnaHost) {
+        warnEl.hidden = false;
+        warnEl.textContent =
+          'Host bridge missing (preload failed). Quit and reopen Nocturna Host, or reinstall the portable build.';
+        statusText.textContent = copy[lang].stopped;
+        dot.className = 'dot err';
+      } else {
+        window.nocturnaHost.onStatus(render);
+        window.nocturnaHost.onLog((line) => {
+          logEl.textContent += line + '\n';
+          logEl.scrollTop = logEl.scrollHeight;
+        });
+        refresh();
+      }
     </script>
   </body>
 </html>

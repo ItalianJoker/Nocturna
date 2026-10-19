@@ -351,7 +351,30 @@ function startEmbeddedServer(port, advertiseHost) {
   return child;
 }
 
+function hostUiFallbackHtml(detail) {
+  const safe = String(detail || 'Unknown error')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+  return `<!doctype html><html><head><meta charset="utf-8"/><title>Nocturna Host</title>
+<style>
+body{margin:0;min-height:100vh;background:#0a0a0c;color:#e7e5e4;font-family:system-ui,sans-serif;
+padding:1.5rem;box-sizing:border-box}
+h1{font-size:1.4rem;color:#fda4af;margin:0 0 .75rem}
+pre{white-space:pre-wrap;word-break:break-word;background:#121218;padding:1rem;
+border-radius:.75rem;border:1px solid rgb(255 255 255/.12);font-size:.85rem;line-height:1.4}
+p{color:#a8a29e;font-size:.9rem}
+</style></head><body>
+<h1>Host UI failed to load</h1>
+<p>The Nocturna Host window could not open its console page. Reinstall the portable build or run from source.</p>
+<pre>${safe}</pre>
+</body></html>`;
+}
+
 function createWindow() {
+  const preloadPath = path.join(__dirname, 'preload.cjs');
+  const uiPath = path.join(__dirname, 'ui', 'index.html');
+
   mainWindow = new BrowserWindow({
     width: 440,
     height: 720,
@@ -361,14 +384,41 @@ function createWindow() {
     backgroundColor: '#0a0a0c',
     autoHideMenuBar: true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.cjs'),
+      preload: preloadPath,
       contextIsolation: true,
       nodeIntegration: false,
-      sandbox: true,
+      // false: some Windows portable builds failed to expose preload APIs under
+      // sandbox+asar, leaving a blank dark window. Host UI has no remote content.
+      sandbox: false,
     },
   });
 
-  mainWindow.loadFile(path.join(__dirname, 'ui', 'index.html'));
+  const showLoadError = (detail) => {
+    if (!mainWindow || mainWindow.isDestroyed()) return;
+    void mainWindow.loadURL(
+      'data:text/html;charset=utf-8,' + encodeURIComponent(hostUiFallbackHtml(detail)),
+    );
+  };
+
+  mainWindow.webContents.on('did-fail-load', (_e, code, desc, url, isMainFrame) => {
+    if (!isMainFrame) return;
+    // Ignore data: fallback failures.
+    if (String(url || '').startsWith('data:')) return;
+    showLoadError(
+      `did-fail-load code=${code}\n${desc}\nurl=${url}\nuiPath=${uiPath}\npreload=${preloadPath}\n__dirname=${__dirname}`,
+    );
+  });
+
+  if (!fs.existsSync(uiPath)) {
+    showLoadError(`Missing Host UI file:\n${uiPath}\n__dirname=${__dirname}`);
+    return;
+  }
+
+  void mainWindow.loadFile(uiPath).catch((err) => {
+    showLoadError(
+      `loadFile rejected:\n${err && err.message ? err.message : err}\nuiPath=${uiPath}`,
+    );
+  });
 }
 
 function statusPayload(partial) {

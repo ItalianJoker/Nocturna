@@ -13,6 +13,7 @@ import { NightScreen } from './components/NightScreen';
 import { RoleReveal } from './components/RoleReveal';
 import { DayFlow } from './components/DayFlow';
 import { MasterDashboard } from './components/MasterDashboard';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 export function App() {
   const view = useAppStore((s) => s.view);
@@ -56,7 +57,7 @@ export function App() {
   }
 
   return (
-    <>
+    <ErrorBoundary>
       {body}
       {toast && (
         <div
@@ -72,6 +73,6 @@ export function App() {
           {toast.message}
         </div>
       )}
-    </>
+    </ErrorBoundary>
   );
 }
