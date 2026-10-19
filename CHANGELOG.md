@@ -29,6 +29,8 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Master night stepper shows localized action labels; role reveal prefers Host-edited deck text.
 
 ### Fixed
+- Host lobby React **#185** (max update depth): `setDraftDeck` no longer loops when syncing `hostDeck` → draft (equality guard; draft removed from effect deps).
+- Electron Host: clearer UI on load/preload failure (no silent black window); `sandbox: false` for reliable preload bridge on portable builds.
 - Windows portable Host: embed `@nocturna/shared` is now a real copy (not a Unix symlink), so the Electron child no longer dies with `MODULE_NOT_FOUND` and a opaque “Health check timeout”.
 - Host: bind always `0.0.0.0`; advertise override is QR/join only; health polls `127.0.0.1`; Refresh/lang no longer restart the server; clearer spawn/stderr/port-in-use errors.
 

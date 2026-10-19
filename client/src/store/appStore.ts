@@ -11,7 +11,7 @@ import type {
   RoleDefinition,
   SyncStatePayload,
 } from '@nocturna/shared';
-import { isMasterGameState } from '@nocturna/shared';
+import { isMasterGameState, roleDecksEqual } from '@nocturna/shared';
 
 const STORAGE_KEY = 'nocturna.session.v1';
 
@@ -77,7 +77,11 @@ export const useAppStore = create<AppState>((set) => ({
   },
   setView: (view) => set({ view }),
   setToast: (toast) => set({ toast }),
-  setDraftDeck: (draftDeck) => set({ draftDeck }),
+  setDraftDeck: (draftDeck) =>
+    set((state) =>
+      // Skip notify when content is unchanged (new array refs from prune/sync).
+      roleDecksEqual(state.draftDeck, draftDeck) ? state : { draftDeck },
+    ),
   setLastHapticSeq: (lastHapticSeq) => set({ lastHapticSeq }),
   clearGame: () => {
     writeStorage(null);

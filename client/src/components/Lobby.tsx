@@ -13,6 +13,7 @@ import {
   createDefaultPartyDeck,
   DEFAULT_ROOM_SETTINGS,
   pruneZeroCountRoles,
+  roleDecksEqual,
   type RoleDefinition,
   type RolePreset,
   type RoomSettings,
@@ -262,16 +263,23 @@ function LobbyRoom() {
   const me = view.players.find((p) => p.id === session.playerId);
   const isHost = !!me?.isHost;
 
+  // Sync server hostDeck → local draft only when content changes.
+  // Do NOT depend on `draftDeck`: an unconditional setDraftDeck when hostDeck
+  // exists would re-fire this effect forever (React #185 max update depth).
   useEffect(() => {
     if (!isHost) return;
+    const current = useAppStore.getState().draftDeck;
     if (view.hostDeck?.length) {
-      setDraftDeck(pruneZeroCountRoles(view.hostDeck));
+      const next = pruneZeroCountRoles(view.hostDeck);
+      if (!roleDecksEqual(current, next)) {
+        setDraftDeck(next);
+      }
       return;
     }
-    if (!draftDeck) {
+    if (!current) {
       setDraftDeck(localizeRoleDeck(createDefaultPartyDeck(), t));
     }
-  }, [isHost, view.hostDeck, draftDeck, setDraftDeck, t]);
+  }, [isHost, view.hostDeck, setDraftDeck, t]);
 
   const joinUrl = useMemo(() => {
     if (!advertise.base) return null;

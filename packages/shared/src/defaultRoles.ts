@@ -484,3 +484,50 @@ export function pruneZeroCountRoles(
 export function createDefaultPartyDeck(): RoleDefinition[] {
   return pruneZeroCountRoles(createDefaultRoleDeck());
 }
+
+/**
+ * Structural equality for party decks (Host draft ↔ server hostDeck sync).
+ * Used to avoid React update loops when an effect would otherwise call
+ * setState with a freshly cloned array of identical content.
+ */
+export function roleDecksEqual(
+  a: RoleDefinition[] | null | undefined,
+  b: RoleDefinition[] | null | undefined,
+): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    const x = a[i]!;
+    const y = b[i]!;
+    if (
+      x.id !== y.id ||
+      x.count !== y.count ||
+      x.name !== y.name ||
+      x.description !== y.description ||
+      x.faction !== y.faction ||
+      x.colorHex !== y.colorHex ||
+      x.iconName !== y.iconName ||
+      x.winCondition !== y.winCondition ||
+      !!x.grantsProtection !== !!y.grantsProtection ||
+      !!x.isLethal !== !!y.isLethal ||
+      (x.inspectReveals ?? null) !== (y.inspectReveals ?? null)
+    ) {
+      return false;
+    }
+    const xs = x.wakeSchedule;
+    const ys = y.wakeSchedule;
+    if (
+      xs.frequency !== ys.frequency ||
+      xs.priority !== ys.priority ||
+      xs.actionType !== ys.actionType ||
+      xs.timeMaskingDuration !== ys.timeMaskingDuration ||
+      (xs.resolutionBand ?? null) !== (ys.resolutionBand ?? null) ||
+      (xs.wakePrompt ?? '') !== (ys.wakePrompt ?? '') ||
+      (xs.passiveInfoText ?? '') !== (ys.passiveInfoText ?? '')
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
