@@ -26,30 +26,30 @@
   },
   "rules": {
     "title": "Rules",
-    "blurb": "How a Nocturna night unfolds — for everyone at the table.",
+    "blurb": "Nocturna in plain language — for Host and players.",
     "goal": {
       "title": "Goal",
-      "body": "Two main sides face each other under the same moon.\n\n• Village wins when every Shadow is gone.\n• Shadows win when they equal or outnumber the living Villagers.\n• Solo / Neutral wanderers may win alone if they are the last one standing.\n\nNever show your role card. Lying is allowed; revealing your private screen is not."
+      "body": "Two main sides play (plus optional Lone / Neutral roles).\n\n• Village wins when no Shadows remain alive.\n• Shadows win when their living members equal or outnumber living Villagers.\n• A Lone or Neutral with a “last survivor” goal wins only if they are the last one alive.\n\nKeep your role card hidden. You may lie out loud; never show your private phone screen."
     },
     "phases": {
       "title": "Phases",
-      "body": "A round moves through:\n\n1. Night — eyes closed; protectors and investigators wake first, then the Shadows hunt, then other night roles — all in silence on their phones.\n2. Dawn — the fallen (if any) are announced.\n3. Discussion — talk, accuse, defend.\n4. Tribunal — vote to eliminate someone you believe is a Shadow (ties follow Host settings).\n\nThen the cycle repeats until a side wins. As a rule of thumb, about one Shadow hunter per five seats keeps the table tense without an auto-loss."
+      "body": "Each cycle has four phases:\n\n1. Night — eyes closed. Phones wake protectors first, then investigators, then the Shadow hunt, then other roles. Nobody should learn who is awake.\n2. Dawn — any fallen players are announced.\n3. Discussion — talk, accuse, defend.\n4. Tribunal — vote who to eliminate. Ties follow the Host’s setting (no elimination, or a runoff).\n\nThen Night starts again until a side wins. A good rule of thumb is about one Shadow hunter per five seats — tense without giving Shadows an auto-win at deal."
     },
     "night": {
       "title": "Night stealth",
-      "body": "During Night every phone stays dark. Nobody should learn who is awake from light, sound, or vibration.\n\nIf haptics are on, every device buzzes the same way. Ambient audio (automated mode) is the same loop for everyone.\n\nConfirming early never ends the wake early — the timer masks who acted first."
+      "body": "At night the screen stays dark. Do not use light, sound, or vibration to guess who is awake.\n\nIf the Host turns on the universal heartbeat, every phone buzzes the same way. Ambient audio (automated mode only) is the same loop for everyone.\n\nConfirming your action early does not end the wake early — the timer hides who finished first."
     },
     "day": {
       "title": "Day & tribunal",
-      "body": "At dawn, victims of the night (if any) are revealed.\n\nIn Discussion you argue freely. In Tribunal you vote. Ties can mean no elimination or a runoff — the Host chooses before the game starts.\n\nVotes may be secret or public, depending on Host settings."
+      "body": "At dawn, names of anyone who fell at night (if any) are announced.\n\nIn Discussion you may speak freely. In Tribunal you vote to eliminate a suspect. Before the game, the Host chooses what happens on a tie and whether votes are secret or public."
     },
     "modes": {
       "title": "Game modes",
-      "body": "• Automated narrator — the server calls each night wake on a timer. Everyone is a player.\n• Assisted Master — one person narrates with a God-View dashboard, can pause, force-advance, and cancel actions. The Master is not dealt a role and does not count for win checks."
+      "body": "• Automated narrator — the server calls each night wake on a timer. Everyone at the table is a player.\n• Assisted Master — one person runs the night with a God-View board: pause, force the next step, cancel actions. The Master is not dealt a role and does not count toward winning."
     },
     "stealth": {
-      "title": "Table etiquette",
-      "body": "Keep phones face-down when sleeping. Do not peek at neighbours. Dead players stay silent about their role. The Host’s QR / join link is always a LAN address — never localhost on player phones."
+      "title": "Table manners",
+      "body": "When you “sleep”, keep your phone face-down. Do not peek at neighbours. Eliminated players do not reveal their role. The Host’s QR and join link always use a reachable LAN address — never localhost on player phones."
     }
   },
   "lobby": {
@@ -106,10 +106,10 @@
     "copyLink": "Copy link",
     "linkCopied": "Link copied.",
     "recommendedTitle": "Recommended games",
-    "recommendedHelp": "One-tap decks for {{count}} players at the table (excluding a non-playing Master). Presets run from 6 to 24 seats.",
+    "recommendedHelp": "One-tap decks for {{count}} players at the table (excluding a non-playing Master). Presets run from 6 to 24 seats. Only roles in the match (count ≥ 1) are added — others stay available under Custom game → Add a missing role.",
     "recommendedSuggested": "Suggested for this table",
     "recommendedApply": "Apply this setup",
-    "recommendedApplied": "Recommended deck applied. You can still edit roles below.",
+    "recommendedApplied": "Recommended deck applied — only roles with copies are in the party. Add others below if you need them.",
     "recommendedPlayers": "{{min}} players",
     "recommendedGeneric": "{{min}} players",
     "recommendedBalanceHint": "Shadow hunters stay ~20–28% of seats; Keeper + investigator always present; heavy specials only on large tables.",
@@ -221,7 +221,7 @@
     "lowerPriority": "Call later",
     "raisePriorityHelp": "Use the arrows to swap call order with the neighbour above or below. Lower number wakes first.",
     "lowerPriorityHelp": "Use the arrows to swap call order with the neighbour above or below. Lower number wakes first.",
-    "copiesHelp": "How many of this role are dealt. Set to 0 to leave it out of the deal (still listed for editing).",
+    "copiesHelp": "How many of this role are dealt. Set to 0 to remove it from the party deck (you can add it again under Custom game).",
     "maskingHelp": "Minimum time this wake stays open (milliseconds). The turn never ends early when someone taps Confirm — that stops neighbours from guessing who acted by timing.",
     "frequencyLabel": {
       "EVERY_NIGHT": "Every night",
@@ -253,87 +253,87 @@
     },
     "cittadino": {
       "name": "Citizen",
-      "description": "Sleeps with no night power. Wins when the last Shadow falls at dawn or under the tribunal."
+      "description": "Village. You do not wake at night and have no power. You win when no Shadows remain (dawn or tribunal)."
     },
     "guardia": {
       "name": "Keeper",
-      "description": "Each night chooses one living player to shelter. If Shadows strike them, they survive until dawn."
+      "description": "Village. Each night choose one living player to protect. If Shadows attack them that night, they survive until dawn."
     },
     "baluardo": {
       "name": "Bulwark",
-      "description": "Only on the first night may they raise a shield over one living player, then return to silence."
+      "description": "Village. Only on night 1 may you shield one living player. From night 2 on, you do not wake."
     },
     "oracolo": {
       "name": "Oracle",
-      "description": "At night investigates one living player and at dawn learns Village or Shadows."
+      "description": "Village. Each night investigate one living player. At dawn you learn only Village or Shadows — not the exact role."
     },
     "lunavista": {
       "name": "Moonseer",
-      "description": "On odd moon nights peers at one living player and at dawn learns their exact role."
+      "description": "Village. You wake on odd nights only (1, 3, 5…). Investigate one living player and learn their exact role at dawn."
     },
     "veglia": {
       "name": "Vigil",
-      "description": "Does not act — only receives a short warning in the silence. Wins with the Village."
+      "description": "Village. You pick no targets: at night you only receive a short message. You win with the Village."
     },
     "eco": {
       "name": "Echo",
-      "description": "On even nights receives a warning that echoes who fell at the day’s tribunal."
+      "description": "Village. You wake on even nights. You receive a message that recalls who fell at the day’s tribunal."
     },
     "legame": {
       "name": "Bond",
-      "description": "Two linked souls: only on the first night they recognise each other in the dark. Wins with the Village. Always add two copies."
+      "description": "Village. Always add two copies. Only on night 1 the two Bonds recognise each other. You win with the Village."
     },
     "ombra": {
       "name": "Shadow",
-      "description": "Village infiltrator. At night the Shadows vote together on a victim to erase by dawn."
+      "description": "Shadows. At night you vote with other living Shadows on one victim to eliminate by dawn. You win when Shadows equal or outnumber living Villagers."
     },
     "caccianotte": {
       "name": "Night-hunter",
-      "description": "Hunts with the pack: votes with the other Shadows on the night’s prey."
+      "description": "Shadows. Like Shadow: at night you vote with the pack on the same victim. Same win condition as the Shadows."
     },
     "artiglio": {
       "name": "Talon",
-      "description": "On even nights strikes alone, beyond the pack vote: chooses one living player to cut down."
+      "description": "Shadows. On even nights you strike alone (in addition to the pack vote): choose one living player to cut down. You win with the Shadows."
     },
     "simulacro": {
       "name": "Simulacrum",
-      "description": "Looks like a Citizen and never wakes, but wins with the Shadows — without knowing who they are."
+      "description": "Hidden Shadow. You look like a Citizen and never wake. You win with the Shadows but do not know who your allies are."
     },
     "vagabondo": {
       "name": "Wanderer",
-      "description": "Lone wanderer: wins only if they remain the last one alive under the moon."
+      "description": "Lone. You win only if you are the last player alive. You have no pack-hunt action."
     },
     "crocevia": {
       "name": "Crossroads",
-      "description": "Neutral at the fork: wins only as the last survivor. On odd nights listens without acting."
+      "description": "Neutral / lone. You win only as the last survivor. On odd nights you hear a message and pick no targets."
     },
     "invocatore": {
       "name": "Invoker",
-      "description": "Does not wake alone: only if the Master calls them in the night do they receive a warning."
+      "description": "Neutral. You do not enter the night queue alone: you wake only if the Master calls you, then you receive a short message."
     },
     "giudice_notte": {
       "name": "Night Arbiter",
-      "description": "Each night investigates one living player and at dawn learns their exact role — the verdict stays private."
+      "description": "Village. Each night investigate one living player. At dawn you learn the exact role — the result stays on your phone only."
     },
     "mannaia": {
       "name": "Cleaver",
-      "description": "On odd nights may cut down one living player for the Village. A mistake is an eternal accusation."
+      "description": "Village. On odd nights you may eliminate one living player for the Village. A wrong target will haunt the table’s trust."
     },
     "crepuscolo": {
       "name": "Twilight",
-      "description": "Wears two faces: by day looks like a Citizen, but wins only as last survivor. On the first night alone listens to both silences — then walks alone."
+      "description": "Lone with two faces. By day you look like a Citizen, but you win only as last survivor. Only on night 1 you hear a message; you have no team power after that."
     },
     "soglia": {
       "name": "Threshold",
-      "description": "On even nights investigates one living player and at dawn learns only Village or Shadows."
+      "description": "Village. You wake on even nights. Investigate one living player and learn only Village or Shadows at dawn (not the exact role)."
     },
     "corvo": {
       "name": "Raven",
-      "description": "Each night receives a warning: mark a name in silence to bring into dawn accusations — no forced vote power."
+      "description": "Village. Each night you receive a message: you may mentally mark a name to accuse at dawn. You do not force tribunal votes."
     },
     "fiamma_fredda": {
       "name": "Cold Flame",
-      "description": "Only on the first night may they strike alone, before the pack even moves."
+      "description": "Shadows. Only on night 1 may you strike one living player alone, before the pack vote. You win with the Shadows."
     }
   },
   "factions": {

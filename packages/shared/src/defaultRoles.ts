@@ -448,6 +448,8 @@ export function createEmptyRoleCatalog(): RoleDefinition[] {
 
 /**
  * Apply a map of roleId → copy count onto a fresh catalog clone.
+ * Includes count-0 rows (full catalog shape). Prefer
+ * {@link deckFromCounts} for Host party decks.
  */
 export function applyRoleCounts(
   counts: Record<string, number>,
@@ -456,4 +458,29 @@ export function applyRoleCounts(
     ...r,
     count: Math.max(0, Math.floor(counts[r.id] ?? 0)),
   }));
+}
+
+/**
+ * Party deck from a count map: only roles with at least one copy.
+ * Zero-count catalog roles are omitted (add later via “missing roles”).
+ */
+export function deckFromCounts(
+  counts: Record<string, number>,
+): RoleDefinition[] {
+  return applyRoleCounts(counts).filter((r) => r.count > 0);
+}
+
+/** Drop roles with count ≤ 0 from an existing deck (active party only). */
+export function pruneZeroCountRoles(
+  deck: RoleDefinition[],
+): RoleDefinition[] {
+  return deck.filter((r) => r.count > 0);
+}
+
+/**
+ * Default mid-table party deck: catalog roles that already have count ≥ 1.
+ * Zero-count catalog entries stay out of the list for the add-missing dropdown.
+ */
+export function createDefaultPartyDeck(): RoleDefinition[] {
+  return pruneZeroCountRoles(createDefaultRoleDeck());
 }

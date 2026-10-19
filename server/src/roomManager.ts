@@ -9,7 +9,7 @@
 
 import { customAlphabet } from 'nanoid';
 import {
-  createDefaultRoleDeck,
+  createDefaultPartyDeck,
   DEFAULT_ROOM_SETTINGS,
   type GameState,
   type Player,
@@ -159,7 +159,7 @@ export function createRoom(args: {
           ...r,
           wakeSchedule: { ...r.wakeSchedule },
         }))
-      : createDefaultRoleDeck(),
+      : createDefaultPartyDeck(),
     nightQueue: [],
     currentTurnIndex: 0,
     pendingActions: [],

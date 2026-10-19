@@ -27,11 +27,25 @@ describe('recommendedSetups', () => {
         assert.ok(ids.has(id), `unknown role id ${id} in ${setup.id}`);
       }
       const deck = deckFromRecommended(setup);
+      assert.ok(
+        deck.every((r) => r.count > 0),
+        `${setup.id} must not include count-0 roles`,
+      );
+      assert.ok(
+        deck.length < createDefaultRoleDeck().length ||
+          Object.keys(setup.counts).length === createDefaultRoleDeck().length,
+        `${setup.id} should omit unused catalog roles from the party deck`,
+      );
       const total = deck.reduce((s, r) => s + r.count, 0);
       assert.equal(
         total,
         setup.minPlayers,
         `${setup.id} copies=${total} expected ${setup.minPlayers}`,
+      );
+      assert.equal(
+        deck.length,
+        Object.keys(setup.counts).length,
+        `${setup.id} deck rows must match positive count keys only`,
       );
       const shadowPower =
         (setup.counts.ombra ?? 0) +

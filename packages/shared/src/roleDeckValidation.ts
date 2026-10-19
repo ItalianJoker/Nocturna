@@ -4,7 +4,7 @@
  * enums and clamps strings/numbers so the night engine never sees junk.
  */
 
-import { createDefaultRoleDeck } from './defaultRoles.js';
+import { createDefaultPartyDeck } from './defaultRoles.js';
 import type {
   ActionType,
   Faction,
@@ -183,12 +183,13 @@ export function sanitizeRoleDefinition(raw: unknown): RoleDefinition | null {
 }
 
 /**
- * Sanitize a Host-submitted deck. Empty / invalid → default catalog clone.
- * Dedupes by `id` (first wins). Caps length at {@link MAX_DECK_ROLES}.
+ * Sanitize a Host-submitted party deck. Empty / invalid → default party deck
+ * (count ≥ 1 only). Dedupes by `id` (first wins). Caps length at
+ * {@link MAX_DECK_ROLES}. Count-0 rows are dropped.
  */
 export function sanitizeRoleDeck(deck: unknown): RoleDefinition[] {
   if (!Array.isArray(deck) || deck.length === 0) {
-    return createDefaultRoleDeck();
+    return createDefaultPartyDeck();
   }
 
   const seen = new Set<string>();
@@ -196,12 +197,13 @@ export function sanitizeRoleDeck(deck: unknown): RoleDefinition[] {
   for (const entry of deck) {
     if (out.length >= MAX_DECK_ROLES) break;
     const role = sanitizeRoleDefinition(entry);
-    if (!role || seen.has(role.id)) continue;
+    // Party deck: drop count-0 rows (catalog leftovers stay addable client-side).
+    if (!role || role.count <= 0 || seen.has(role.id)) continue;
     seen.add(role.id);
     out.push(role);
   }
 
-  return out.length > 0 ? out : createDefaultRoleDeck();
+  return out.length > 0 ? out : createDefaultPartyDeck();
 }
 
 /** Sum of positive copy counts (seats dealt, excluding zeroed roles). */

@@ -51,6 +51,11 @@ export function RoleScheduleEditor({
   );
 
   const update = (id: string, patch: Partial<RoleDefinition['wakeSchedule']> & { count?: number }) => {
+    if (patch.count !== undefined && patch.count <= 0) {
+      // Leave the party deck — Host can re-add via Partita Personalizzata.
+      onChange(deck.filter((r) => r.id !== id));
+      return;
+    }
     onChange(
       deck.map((r) => {
         if (r.id !== id) return r;

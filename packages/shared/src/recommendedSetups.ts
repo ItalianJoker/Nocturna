@@ -13,7 +13,7 @@
  */
 
 import type { RoleDefinition } from './types.js';
-import { applyRoleCounts } from './defaultRoles.js';
+import { deckFromCounts } from './defaultRoles.js';
 
 export interface RecommendedSetup {
   /** Stable id for i18n keys `lobby.recommended.<id>.*`. */
@@ -123,8 +123,13 @@ export const RECOMMENDED_SETUPS: RecommendedSetup[] = Array.from(
   (_, i) => setupForCount(i + 6),
 );
 
+/**
+ * Active party deck for a recommended setup: only roles with count ≥ 1.
+ * Catalog roles left at 0 are omitted so they stay available via
+ * Partita Personalizzata → “add missing role”.
+ */
 export function deckFromRecommended(setup: RecommendedSetup): RoleDefinition[] {
-  return applyRoleCounts(setup.counts);
+  return deckFromCounts(setup.counts);
 }
 
 /**
