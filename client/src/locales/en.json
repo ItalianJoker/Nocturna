@@ -90,7 +90,7 @@
     "assistedMultHelp": "In Master-assisted mode, soft timers can run longer (duration × this factor) so the Master has time to narrate. Automated mode ignores this.",
     "allowLateJoin": "Allow late join",
     "allowLateJoinHelp": "If on, players may still enter the PIN after the game started — they join as spectators without a dealt role.",
-    "modeHelp": "Automated: the server calls night turns on a timer. Assisted: a Master advances turns and sees the God-View.",
+    "modeHelp": "Automated narrator: the server calls night turns on a timer. Assisted Master: a Master advances turns and sees the God-View.",
     "export": "Export",
     "import": "Import",
     "presetExported": "Preset exported.",
@@ -112,7 +112,7 @@
     "recommendedApplied": "Recommended deck applied. You can still edit roles below.",
     "recommendedPlayers": "{{min}} players",
     "recommendedGeneric": "{{min}} players",
-    "recommendedBalanceHint": "Shadow hunters stay ~20–28% of seats; Custode + investigator always present; heavy specials only on large tables.",
+    "recommendedBalanceHint": "Shadow hunters stay ~20–28% of seats; Keeper + investigator always present; heavy specials only on large tables.",
     "customGameTitle": "Custom game",
     "customGameHelp": "Build the deck by hand: set copies per role, check the seat total against players at the table, then deal when it matches.",
     "customComposition": "{{seats}} role copies · {{players}} players at the table",
@@ -125,29 +125,29 @@
     "customDecrease": "Remove one copy",
     "customRemove": "Remove from deck",
     "customAddMissingTitle": "Add a missing role",
-    "customAddMissingHelp": "Roles from the full Nocturna catalog that are not in this party deck yet.",
+    "customAddMissingHelp": "Roles from the full Nocturna catalog that are not in this game’s deck yet.",
     "customAddMissingEmpty": "Every catalog role is already in this deck.",
     "customAddMissingLabel": "Role to add",
     "customAddMissingPlaceholder": "Choose a role…",
     "customAddMissingAction": "Add to deck",
     "customRoleTitle": "Create a custom role",
-    "customRoleHelp": "Name, faction, description, and wake basics — same data-driven fields as catalog roles. Saved with the room deck and included in Export/Import.",
+    "customRoleHelp": "Name, faction, description, and wake basics — same engine fields as catalog roles. Saved with the room deck and included in Export/Import.",
     "customRoleShow": "Show form",
     "customRoleHide": "Hide form",
     "customRoleName": "Role name",
     "customRoleNamePlaceholder": "e.g. Silent Lantern",
     "customRoleNameRequired": "Give the role a name.",
-    "customRoleIdClash": "That id is already in the deck — rename slightly and try again.",
+    "customRoleIdClash": "That role is already in the deck — rename slightly and try again.",
     "customRoleDescription": "Description",
-    "customRoleDescriptionPlaceholder": "What this role does under the night…",
+    "customRoleDescriptionPlaceholder": "What this role does during the night…",
     "customRoleFaction": "Faction",
     "customRoleWin": "How they win",
     "customRolePriorityHelp": "Lower number = woken earlier in the night (call order).",
     "customRoleIcon": "Icon",
     "customRoleCreate": "Add custom role",
     "winConditionLabel": {
-      "ELIMINATE_ALL_IMPOSTORS": "Village wins with the dawn",
-      "EQUAL_OR_GREATER_THAN_VILLAGERS": "Shadows outnumber the Village",
+      "ELIMINATE_ALL_IMPOSTORS": "Win with the Village",
+      "EQUAL_OR_GREATER_THAN_VILLAGERS": "Shadows equal or outnumber the Village",
       "LAST_SURVIVOR": "Last one alive",
       "CUSTOM_SURVIVE": "Survive until the end"
     },
@@ -175,35 +175,35 @@
       "Gavel": "Gavel",
       "Axe": "Axe",
       "Split": "Split path",
-      "Fingerprint": "Print",
+      "Fingerprint": "Fingerprint",
       "Bird": "Bird",
       "Flame": "Flame"
     },
     "recommended": {
-      "table6": { "title": "6 — Small night", "blurb": "1 Shadow · Custode · Oracle" },
+      "table6": { "title": "6 — Small night", "blurb": "1 Shadow · Keeper · Oracle" },
       "table7": { "title": "7 — Twin shadows", "blurb": "2 Shadows enter" },
       "table8": { "title": "8 — Classic village", "blurb": "Balanced starter" },
-      "table9": { "title": "9 — Echo", "blurb": "Adds Eco" },
+      "table9": { "title": "9 — Echo", "blurb": "Echo joins" },
       "table10": { "title": "10 — First shield", "blurb": "Bulwark joins" },
-      "table11": { "title": "11 — Moonseer", "blurb": "Lunavista opens" },
-      "table12": { "title": "12 — Threshold", "blurb": "3 hunters · Soglia" },
-      "table13": { "title": "13 — Wanderer", "blurb": "Solo Vagabondo" },
-      "table14": { "title": "14 — Night judge", "blurb": "Giudice della Notte" },
+      "table11": { "title": "11 — Moonseer", "blurb": "Moonseer opens" },
+      "table12": { "title": "12 — Threshold", "blurb": "3 hunters · Threshold" },
+      "table13": { "title": "13 — Wanderer", "blurb": "Lone Wanderer" },
+      "table14": { "title": "14 — Night Arbiter", "blurb": "Night Arbiter joins" },
       "table15": { "title": "15 — Simulacrum", "blurb": "Hidden Shadow ally" },
-      "table16": { "title": "16 — Cleaver", "blurb": "Village Mannaia" },
-      "table17": { "title": "17 — Raven", "blurb": "Corvo whispers" },
-      "table18": { "title": "18 — Bonds", "blurb": "Legame pair" },
-      "table19": { "title": "19 — Twilight", "blurb": "Crepuscolo dual face" },
-      "table20": { "title": "20 — Talon", "blurb": "Artiglio even nights" },
-      "table21": { "title": "21 — Vigil", "blurb": "Veglia watches" },
-      "table22": { "title": "22 — Cold flame", "blurb": "Fiamma Fredda night 1" },
-      "table23": { "title": "23 — Crossroads", "blurb": "Crocevia joins" },
+      "table16": { "title": "16 — Cleaver", "blurb": "Village Cleaver" },
+      "table17": { "title": "17 — Raven", "blurb": "Raven whispers" },
+      "table18": { "title": "18 — Bonds", "blurb": "Bond pair" },
+      "table19": { "title": "19 — Twilight", "blurb": "Twilight dual face" },
+      "table20": { "title": "20 — Talon", "blurb": "Talon on even nights" },
+      "table21": { "title": "21 — Vigil", "blurb": "Vigil watches" },
+      "table22": { "title": "22 — Cold Flame", "blurb": "Cold Flame on night 1" },
+      "table23": { "title": "23 — Crossroads", "blurb": "Crossroads joins" },
       "table24": { "title": "24 — Full night", "blurb": "Invoker + full cast" }
     }
   },
   "roles": {
     "guideTitle": "Roles in this game",
-    "guideHelp": "These are the roles in the current Nocturna deck — name, faction, and what they do under the night.",
+    "guideHelp": "These are the roles in the current Nocturna deck — name, faction, and what they do during the night.",
     "guideEditableHint": "You can edit names and descriptions before dealing. Players will see your text when they reveal their role.",
     "roleName": "Role name",
     "roleDescription": "Description",
@@ -240,14 +240,14 @@
     "actionLabel": {
       "NONE": "No night action",
       "SINGLE_TARGET": "Choose one player",
-      "FACTION_VOTE": "Shadows hunt together",
+      "FACTION_VOTE": "Faction hunts together",
       "INSPECT_TARGET": "Investigate one player",
       "PASSIVE_INFO": "Listen only"
     },
     "actionHelp": {
       "NONE": "This role is never woken for an action (typical Citizen).",
       "SINGLE_TARGET": "The awake player picks one living target (e.g. protect or strike).",
-      "FACTION_VOTE": "All living members of this faction vote together on one victim (Shadow hunt).",
+      "FACTION_VOTE": "All living members of this faction vote together on one victim (e.g. the Shadow hunt).",
       "INSPECT_TARGET": "Pick one player; the result is private intel at dawn.",
       "PASSIVE_INFO": "Shows a short message only — no target to choose."
     },
@@ -261,7 +261,7 @@
     },
     "baluardo": {
       "name": "Bulwark",
-      "description": "Only on the first night may raise a shield over one living player, then returns to silence."
+      "description": "Only on the first night may they raise a shield over one living player, then return to silence."
     },
     "oracolo": {
       "name": "Oracle",
@@ -333,14 +333,14 @@
     },
     "fiamma_fredda": {
       "name": "Cold Flame",
-      "description": "Only on the first night may strike alone, before the pack even moves."
+      "description": "Only on the first night may they strike alone, before the pack even moves."
     }
   },
   "factions": {
     "VILLAGE": "Village",
     "IMPOSTORS": "Shadows",
     "NEUTRAL": "Neutrals",
-    "SOLO": "Solo"
+    "SOLO": "Lone"
   },
   "phases": {
     "LOBBY": "Lobby",

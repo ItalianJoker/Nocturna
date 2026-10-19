@@ -17,6 +17,7 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Tap-to-open FieldHelp (mobile-friendly) for Frequency, Action, and opaque Host settings.
 
 ### Changed
+- Locale copy audit (IT/EN): grammar fixes, EN recommended blurbs use English role names, no leftover “custom”/data-driven jargon in IT, faction-generic hunt action labels.
 - Role schedule selects no longer show raw enums (`EVERY_NIGHT`, `SINGLE_TARGET`, …) — translated labels + help in IT/EN.
 - Friendly “call order” wording (no “priority” jargon in UI).
 - Master night stepper shows localized action labels; role reveal prefers Host-edited deck text.
