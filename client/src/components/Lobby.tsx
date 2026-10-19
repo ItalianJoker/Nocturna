@@ -20,6 +20,7 @@ import { getSocket } from '../lib/socket';
 import { RoleScheduleEditor } from './RoleScheduleEditor';
 import { RolesDeckGuide } from './RolesDeckGuide';
 import { RecommendedSetups } from './RecommendedSetups';
+import { CustomGamePanel } from './CustomGamePanel';
 import { LobbyRules } from './LobbyRules';
 import { FieldHelp } from './FieldHelp';
 import { LanguageSwitcher } from './LanguageSwitcher';
@@ -672,6 +673,11 @@ function LobbyRoom() {
                   message: t('lobby.recommendedApplied'),
                 });
               }}
+            />
+            <CustomGamePanel
+              deck={draftDeck}
+              playerCount={view.players.filter((p) => !p.isMaster).length}
+              onChange={saveDeck}
             />
             <RolesDeckGuide
               deck={draftDeck}

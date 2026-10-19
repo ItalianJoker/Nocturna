@@ -8,11 +8,10 @@
 
 import type { Server, Socket } from 'socket.io';
 import {
-  createDefaultRoleDeck,
+  sanitizeRoleDeck,
   viewForPlayer,
   type ClientToServerEvents,
   type InterServerEvents,
-  type RoleDefinition,
   type RoomSettings,
   type ServerToClientEvents,
   type SocketData,
@@ -239,7 +238,7 @@ export function registerSocketHandlers(io: NocturnaServer): void {
         ack?.({ ok: false, error: 'Solo in lobby.' });
         return;
       }
-      room.roleDeck = sanitizeDeck(payload.roleDeck);
+      room.roleDeck = sanitizeRoleDeck(payload.roleDeck);
       broadcastRoomState(io, room.roomId);
       ack?.({ ok: true });
     });
@@ -289,7 +288,7 @@ export function registerSocketHandlers(io: NocturnaServer): void {
         ack?.({ ok: false, error: 'Preset non valido.' });
         return;
       }
-      room.roleDeck = sanitizeDeck(preset.roles);
+      room.roleDeck = sanitizeRoleDeck(preset.roles);
       if (preset.settings) {
         room.settings = {
           ...room.settings,
@@ -470,23 +469,3 @@ function requireHostOrMaster(socket: NocturnaSocket) {
   return { ok: false as const, error: 'Permesso negato.' };
 }
 
-function sanitizeDeck(deck: RoleDefinition[]): RoleDefinition[] {
-  if (!Array.isArray(deck) || deck.length === 0) {
-    return createDefaultRoleDeck();
-  }
-  return deck.map((r) => ({
-    ...r,
-    id: String(r.id).slice(0, 64),
-    name: String(r.name).slice(0, 48),
-    description: String(r.description).slice(0, 500),
-    count: Math.max(0, Math.min(20, Number(r.count) || 0)),
-    wakeSchedule: {
-      ...r.wakeSchedule,
-      priority: Number(r.wakeSchedule?.priority) || 50,
-      timeMaskingDuration: Math.max(
-        0,
-        Number(r.wakeSchedule?.timeMaskingDuration) || 20_000,
-      ),
-    },
-  }));
-}
