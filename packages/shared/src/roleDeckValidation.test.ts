@@ -8,7 +8,7 @@ import {
   sanitizeRoleDefinition,
   sanitizeRoleDeck,
 } from './roleDeckValidation.js';
-import { createDefaultRoleDeck } from './defaultRoles.js';
+import { createDefaultPartyDeck } from './defaultRoles.js';
 
 describe('sanitizeRoleDefinition', () => {
   it('accepts a custom role with valid enums', () => {
@@ -97,11 +97,22 @@ describe('sanitizeRoleDefinition', () => {
 });
 
 describe('sanitizeRoleDeck', () => {
-  it('returns default deck for empty / non-array', () => {
+  it('returns active default party deck for empty / non-array', () => {
+    const expected = createDefaultPartyDeck();
     const a = sanitizeRoleDeck([]);
     const b = sanitizeRoleDeck(null);
-    assert.equal(a.length, createDefaultRoleDeck().length);
-    assert.equal(b.length, createDefaultRoleDeck().length);
+    assert.equal(a.length, expected.length);
+    assert.equal(b.length, expected.length);
+    assert.ok(a.every((r) => r.count > 0));
+  });
+
+  it('drops count-0 rows from the party deck', () => {
+    const deck = sanitizeRoleDeck([
+      { id: 'cittadino', name: 'Citizen', count: 3, faction: 'VILLAGE' },
+      { id: 'eco', name: 'Echo', count: 0, faction: 'VILLAGE' },
+    ]);
+    assert.equal(deck.length, 1);
+    assert.equal(deck[0]!.id, 'cittadino');
   });
 
   it('keeps custom roles alongside catalog roles', () => {

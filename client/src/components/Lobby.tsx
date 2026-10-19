@@ -10,8 +10,9 @@ import { QRCodeSVG } from 'qrcode.react';
 import { Copy, Download, Upload, Wifi, WifiOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import {
-  createDefaultRoleDeck,
+  createDefaultPartyDeck,
   DEFAULT_ROOM_SETTINGS,
+  pruneZeroCountRoles,
   type RoleDefinition,
   type RolePreset,
   type RoomSettings,
@@ -264,11 +265,11 @@ function LobbyRoom() {
   useEffect(() => {
     if (!isHost) return;
     if (view.hostDeck?.length) {
-      setDraftDeck(view.hostDeck);
+      setDraftDeck(pruneZeroCountRoles(view.hostDeck));
       return;
     }
     if (!draftDeck) {
-      setDraftDeck(localizeRoleDeck(createDefaultRoleDeck(), t));
+      setDraftDeck(localizeRoleDeck(createDefaultPartyDeck(), t));
     }
   }, [isHost, view.hostDeck, draftDeck, setDraftDeck, t]);
 
@@ -286,8 +287,9 @@ function LobbyRoom() {
   };
 
   const saveDeck = (deck: RoleDefinition[]) => {
-    setDraftDeck(deck);
-    getSocket().emit('lobby:updateDeck', { roleDeck: deck });
+    const active = pruneZeroCountRoles(deck);
+    setDraftDeck(active);
+    getSocket().emit('lobby:updateDeck', { roleDeck: active });
   };
 
   const exportPreset = () => {
@@ -295,7 +297,7 @@ function LobbyRoom() {
       name: view.settings.roomName,
       version: 1,
       settings: { ...DEFAULT_ROOM_SETTINGS, ...view.settings },
-      roles: draftDeck ?? createDefaultRoleDeck(),
+      roles: draftDeck ?? createDefaultPartyDeck(),
       exportedAt: Date.now(),
     };
     localStorage.setItem(PRESET_KEY, JSON.stringify(preset));

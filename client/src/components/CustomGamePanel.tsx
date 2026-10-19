@@ -112,13 +112,13 @@ export function CustomGamePanel({
   const [creatorError, setCreatorError] = useState<string | null>(null);
 
   const setCount = (id: string, count: number) => {
-    onChange(
-      deck.map((r) =>
-        r.id === id
-          ? { ...r, count: Math.max(0, Math.min(20, Math.floor(count))) }
-          : r,
-      ),
-    );
+    const next = Math.max(0, Math.min(20, Math.floor(count)));
+    // Count 0 leaves the party deck so the catalog role reappears in “add missing”.
+    if (next <= 0) {
+      onChange(deck.filter((r) => r.id !== id));
+      return;
+    }
+    onChange(deck.map((r) => (r.id === id ? { ...r, count: next } : r)));
   };
 
   const removeRole = (id: string) => {
