@@ -8,6 +8,8 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 ## [Unreleased]
 
 ### Added
+- Lobby **Partita Personalizzata**: Host manual deck counts, composition vs player-count overview, add missing catalog roles, create custom `RoleDefinition`s (IT/EN).
+- Shared `sanitizeRoleDeck` / `sanitizeRoleDefinition`: enum/id/length validation accepting custom role ids (not catalog-only); used by `lobby:updateDeck` and `lobby:importPreset`.
 - Lobby **Regolamento** (Host + players): phases, night stealth, tribunal, modes — IT/EN, original Nocturna copy.
 - Lobby **Roles in this game** guide: name, faction, editable description before deal (IT/EN).
 - **Partite consigliate**: one-tap decks for **every seat count 6–24** (~1 Shadow hunter per 5 seats).
@@ -15,6 +17,7 @@ and this project adheres to [Conventional Commits](https://www.conventionalcommi
 - Tap-to-open FieldHelp (mobile-friendly) for Frequency, Action, and opaque Host settings.
 
 ### Changed
+- Locale copy audit (IT/EN): grammar fixes, EN recommended blurbs use English role names, no leftover “custom”/data-driven jargon in IT, faction-generic hunt action labels.
 - Role schedule selects no longer show raw enums (`EVERY_NIGHT`, `SINGLE_TARGET`, …) — translated labels + help in IT/EN.
 - Friendly “call order” wording (no “priority” jargon in UI).
 - Master night stepper shows localized action labels; role reveal prefers Host-edited deck text.
